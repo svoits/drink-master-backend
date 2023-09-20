@@ -4,6 +4,10 @@ const {
   getMainPageDrinks,
   getPopularDrinks,
   searchDrinks,
+  getDrinkById,
+  addOwnDrink,
+  removeOwnDrink,
+  getOwnDrinks,
 } = require("../../controllers/drinks");
 
 const router = express.Router();
@@ -11,10 +15,10 @@ const router = express.Router();
 router.get("/mainpage", authenticate, getMainPageDrinks);
 router.get("/popular", authenticate, getPopularDrinks);
 router.get("/search", authenticate, searchDrinks);
-router.get("/:id", authenticate);
-router.post("/own/add", authenticate);
-router.delete("/own/remove", authenticate);
-router.get("/own", authenticate);
+router.get("/:id", authenticate, getDrinkById);
+router.post("/own/add", authenticate, upload.single("drinkThumb"), addOwnDrink);
+router.delete("/own/remove/:id", authenticate, removeOwnDrink);
+router.get("/own/all", authenticate, getOwnDrinks);
 router.post("/favorite/add", authenticate);
 router.delete("/favorite/remove", authenticate);
 router.get("/favorite", authenticate);

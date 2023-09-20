@@ -90,6 +90,10 @@ const drinkSchema = new Schema(
       {
         title: String,
         measure: String,
+        ingredientId: {
+          type: Schema.Types.ObjectId,
+          ref: "ingredients",
+        },
       },
     ],
     shortDescription: String,

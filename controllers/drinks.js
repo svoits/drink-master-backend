@@ -3,38 +3,30 @@ const path = require("path");
 const fs = require("fs/promises");
 const { differenceInYears } = require("date-fns");
 const { Drink } = require("../models/drink");
+const { Ingredient } = require("../models/ingredient");
 
 const categoriesPath = path.join(__dirname, "../", "db", "categories.json");
 
 const getMainPageDrinks = async (req, res) => {
   const { birthDate } = req.user;
-
   const currentDate = new Date();
-
   const age = differenceInYears(currentDate, birthDate);
 
   const drinks = {};
-
   const categories = await fs.readFile(categoriesPath);
   const parsedCategories = JSON.parse(categories);
 
-  if (age >= 18) {
-    for (const category of parsedCategories) {
-      drinks[category] = await Drink.find({
-        category,
-      })
-        .sort({ createdAt: -1 })
-        .limit(3);
-    }
-  } else {
-    for (const category of parsedCategories) {
-      drinks[category] = await Drink.find({
-        category,
-        alcoholic: "Non alcoholic",
-      })
-        .sort({ createdAt: -1 })
-        .limit(3);
-    }
+  for (const category of parsedCategories) {
+    drinks[category] = await Drink.find(
+      age < 18
+        ? {
+            category,
+            alcoholic: "Non alcoholic",
+          }
+        : { category }
+    )
+      .sort({ createdAt: -1 })
+      .limit(3);
   }
 
   res.json(drinks);
@@ -77,16 +69,98 @@ const searchDrinks = async (req, res) => {
   res.json({ total, drinks });
 };
 
+const getDrinkById = async (req, res) => {
+  const { id } = req.params;
+  const drinkById = await Drink.findById(id);
+
+  if (!drinkById) {
+    throw HttpError(404, "Not Found");
+  }
+
+  res.json(drinkById);
+};
+
+const addOwnDrink = async (req, res) => {
+  const { _id: owner } = req.user;
+  // const { ingredients } = req.body;
+
+  const ingredients = [{ title: "Light rum" }, { title: "Applejack" }]; // FOR TEST
+
+  let drinkThumb = "";
+  if (req.file) {
+    drinkThumb = req.file.path;
+  }
+
+  const ingredientsArr = [];
+
+  for (const ingredient of ingredients) {
+    console.log(ingredient);
+    const ingredientInfo = await Ingredient.findOne({
+      title: ingredient.title,
+    });
+
+    if (!ingredientInfo) {
+      throw HttpError(404, "Not Found");
+    }
+
+    const { _id: ingredientId } = ingredientInfo;
+
+    ingredientsArr.push({
+      ...ingredient,
+      ingredientId,
+    });
+  }
+
+  const drink = await Drink.create({
+    ...req.body,
+    owner,
+    drinkThumb,
+    ingredients: ingredientsArr,
+  });
+
+  res.status(201).json(drink);
+};
+
+const removeOwnDrink = async (req, res) => {
+  const { id } = req.params;
+  const { _id: currentUser } = req.user;
+
+  const result = await Drink.findById(id);
+
+  if (!result) {
+    throw HttpError(404, "Not Found");
+  }
+
+  if (result.owner.toString() !== currentUser.toString()) {
+    throw HttpError(403, "Not authorized");
+  }
+
+  const removedDrink = await Drink.findByIdAndRemove(id);
+
+  res.json({ message: `${removedDrink.drink} drink succesfully removed.` });
+};
+
+const getOwnDrinks = async (req, res) => {
+  const { _id: owner } = req.user;
+  const { page = 1, limit = 10 } = req.query;
+  const skip = (page - 1) * limit;
+
+  const result = await Drink.find({ owner })
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit);
+
+  const totalOwnDrinks = await Drink.countDocuments({ owner });
+
+  res.json({ total: totalOwnDrinks, result });
+};
+
 module.exports = {
   getMainPageDrinks: controllerWrapper(getMainPageDrinks),
   getPopularDrinks: controllerWrapper(getPopularDrinks),
   searchDrinks: controllerWrapper(searchDrinks),
+  getDrinkById: controllerWrapper(getDrinkById),
+  addOwnDrink: controllerWrapper(addOwnDrink),
+  removeOwnDrink: controllerWrapper(removeOwnDrink),
+  getOwnDrinks: controllerWrapper(getOwnDrinks),
 };
-
-// const drinks = {
-//   "Ordinary Drink": [{ cocktail }, { cocktail }, { cocktail }],
-
-//   Cocktail: [{ cocktail }, { cocktail }, { cocktail }],
-
-//   Shake: [{ cocktail }, { cocktail }, { cocktail }],
-// };
