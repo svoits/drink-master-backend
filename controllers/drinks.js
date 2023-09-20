@@ -82,9 +82,9 @@ const getDrinkById = async (req, res) => {
 
 const addOwnDrink = async (req, res) => {
   const { _id: owner } = req.user;
-  // const { ingredients } = req.body;
+  const { ingredients } = req.body;
 
-  const ingredients = [{ title: "Light rum" }, { title: "Applejack" }]; // FOR TEST
+  // const ingredients = [{ title: "Light rum" }, { title: "Applejack" }]; // FOR TEST
 
   let drinkThumb = "";
   if (req.file) {
