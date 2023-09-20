@@ -97,8 +97,9 @@ const drinkSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "user",
     },
+    users: [String],
   },
-  { versionKey: false }
+  { versionKey: false, timestamps: true }
 );
 
 drinkSchema.post("save", handleMongooseError);

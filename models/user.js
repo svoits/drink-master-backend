@@ -20,6 +20,10 @@ const userSchema = new Schema(
       match: emailRegexp,
       unique: true,
     },
+    birthDate: {
+      type: Date,
+      required: [true, "BirthDate is required"],
+    },
     token: {
       type: String,
       default: "",
@@ -50,6 +54,9 @@ const registerSchema = Joi.object({
   }),
   password: Joi.string().required().messages({
     "any.required": "missing required password field",
+  }),
+  birthDate: Joi.date().required().messages({
+    "any.required": "missing required birthDate field",
   }),
 });
 
