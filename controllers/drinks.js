@@ -32,7 +32,36 @@ const getMainPageDrinks = async (req, res) => {
   res.json(drinks);
 };
 
-const getPopularDrinks = async (req, res) => {};
+const getPopularDrinks = async (req, res) => {
+  const { page = 1, limit = 10 } = req.query;
+  const skip = (page - 1) * limit;
+
+  const result = await Drink.aggregate([
+    {
+      $addFields: {
+        popularity: {
+          $cond: {
+            if: { $isArray: "$users" },
+            then: { $size: "$users" },
+            else: 0,
+          },
+        },
+      },
+    },
+    {
+      $sort: { popularity: -1 }, // Sort by array length in descending order
+    },
+    // {
+    //   $project: {
+    //     popularity: 0, // Exclude the temporary field from the final result if desired
+    //   },
+    // },
+  ])
+    .skip(skip)
+    .limit(limit);
+
+  res.json({ result });
+};
 
 const searchDrinks = async (req, res) => {
   const { category, ingredient, query, page = 1, limit = 10 } = req.query;
@@ -155,6 +184,93 @@ const getOwnDrinks = async (req, res) => {
   res.json({ total: totalOwnDrinks, result });
 };
 
+const addFavoriteDrink = async (req, res) => {
+  const { id } = req.params;
+  const { _id: userId } = req.user;
+
+  const drink = await Drink.findById(id);
+
+  if (!drink) {
+    throw HttpError(404, "Not Found");
+  }
+
+  if (!drink.users) {
+    drink.users = [];
+  }
+
+  const isFavorite = drink.users.includes(userId);
+
+  let result;
+
+  if (isFavorite) {
+    throw HttpError(409, `${drink.drink} is already in your favorites.`);
+  } else {
+    result = await Drink.findByIdAndUpdate(
+      drink._id,
+      { $push: { users: userId } },
+      { new: true }
+    );
+  }
+
+  res.json({ result });
+};
+
+const removeFavoriteDrink = async (req, res) => {
+  const { id } = req.params;
+  const { _id: userId } = req.user;
+
+  const drink = await Drink.findById(id);
+
+  if (!drink) {
+    throw HttpError(404, "Not Found");
+  }
+
+  const isFavorite = drink.users.includes(userId);
+
+  let result;
+
+  if (isFavorite) {
+    result = await Drink.findByIdAndUpdate(
+      drink._id,
+      {
+        $pull: { users: userId },
+      },
+      { new: true }
+    );
+  } else {
+    throw HttpError(403, `${drink.drink} is not in your favorites.`);
+  }
+
+  res.json({ result });
+};
+
+const getFavoriteDrinks = async (req, res) => {
+  const { _id: userId } = req.user;
+  const { page = 1, limit = 10 } = req.query;
+  const skip = (page - 1) * limit;
+
+  const result = await Drink.find({
+    users: {
+      $elemMatch: {
+        $eq: userId,
+      },
+    },
+  })
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit);
+
+  const totalOwnDrinks = await Drink.countDocuments({
+    users: {
+      $elemMatch: {
+        $eq: userId,
+      },
+    },
+  });
+
+  res.json({ total: totalOwnDrinks, result });
+};
+
 module.exports = {
   getMainPageDrinks: controllerWrapper(getMainPageDrinks),
   getPopularDrinks: controllerWrapper(getPopularDrinks),
@@ -163,4 +279,7 @@ module.exports = {
   addOwnDrink: controllerWrapper(addOwnDrink),
   removeOwnDrink: controllerWrapper(removeOwnDrink),
   getOwnDrinks: controllerWrapper(getOwnDrinks),
+  addFavoriteDrink: controllerWrapper(addFavoriteDrink),
+  removeFavoriteDrink: controllerWrapper(removeFavoriteDrink),
+  getFavoriteDrinks: controllerWrapper(getFavoriteDrinks),
 };
