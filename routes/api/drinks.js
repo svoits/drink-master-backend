@@ -8,6 +8,9 @@ const {
   addOwnDrink,
   removeOwnDrink,
   getOwnDrinks,
+  addFavoriteDrink,
+  removeFavoriteDrink,
+  getFavoriteDrinks,
 } = require("../../controllers/drinks");
 
 const router = express.Router();
@@ -19,8 +22,8 @@ router.get("/:id", authenticate, getDrinkById);
 router.post("/own/add", authenticate, upload.single("drinkThumb"), addOwnDrink);
 router.delete("/own/remove/:id", authenticate, removeOwnDrink);
 router.get("/own/all", authenticate, getOwnDrinks);
-router.post("/favorite/add", authenticate);
-router.delete("/favorite/remove", authenticate);
-router.get("/favorite", authenticate);
+router.post("/favorite/add/:id", authenticate, addFavoriteDrink);
+router.delete("/favorite/remove/:id", authenticate, removeFavoriteDrink);
+router.get("/favorite/all", authenticate, getFavoriteDrinks);
 
 module.exports = router;
