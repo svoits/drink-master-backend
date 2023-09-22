@@ -15,6 +15,7 @@ const {
 
 const router = express.Router();
 
+// drink routes
 router.get("/mainpage", authenticate, getMainPageDrinks);
 router.get("/popular", authenticate, getPopularDrinks);
 router.get("/search", authenticate, searchDrinks);
