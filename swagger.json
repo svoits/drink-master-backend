@@ -22,7 +22,7 @@
     },
     {
       "name": "Users",
-      "description": "User endtions"
+      "description": "User endpoints"
     },
     {
       "name": "Filters",
@@ -105,8 +105,34 @@
             "description": "Bad request (invalid request body)",
             "content": {}
           },
-          "409": {
-            "description": "Provided email already exists",
+          "401": {
+            "description": "Email or password is wrong",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/auth/signout": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "User signout",
+        "parameters": [],
+        "security": [{ "Bearer": [] }],
+        "responses": {
+          "204": {
+            "description": "Successful operation",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad request (invalid request body)",
+            "content": {}
+          },
+          "401": {
+            "description": "No token provided",
+            "content": {}
+          },
+          "404": {
+            "description": "Invalid user",
             "content": {}
           }
         }
@@ -160,6 +186,49 @@
                 "example": "john@mail.com"
               }
             }
+          }
+        }
+      },
+      "LoginRequest": {
+        "type": "object",
+        "required": ["name", "email"],
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "User's email",
+            "format": "email",
+            "example": "john@mail.com"
+          },
+          "password": {
+            "type": "string",
+            "description": "User's password",
+            "example": "qwerty123"
+          }
+        }
+      },
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "User's name",
+                "example": "John"
+              },
+              "email": {
+                "type": "string",
+                "description": "User's email",
+                "format": "email",
+                "example": "john@mail.com"
+              }
+            }
+          },
+          "token": {
+            "type": "string",
+            "description": "User's token (needed for all requests)",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0ZTVlMmNmYjJiZjkyMTUzYzRhNThiNyIsImlhdCI6MTY5MjgwNjQzMiwiZXhwIjoxNjkyODkyODMyfQ.YAc-Qk0_KRHvlZoDwqrpzQjq2W09AdCh-x97-8pJ2nc"
           }
         }
       },
