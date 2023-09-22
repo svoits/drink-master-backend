@@ -25,7 +25,8 @@
     "mongoose": "^7.4.3",
     "morgan": "1.10.0",
     "multer-storage-cloudinary": "^4.0.0",
-    "nanoid": "^3.3.4"
+    "nanoid": "^3.3.4",
+    "swagger-ui-express": "^5.0.0"
   },
   "devDependencies": {
     "eslint": "7.19.0",
