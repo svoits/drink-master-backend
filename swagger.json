@@ -137,6 +137,173 @@
           }
         }
       }
+    },
+    "/users/current": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Current user",
+        "parameters": [],
+        "security": [{ "Bearer": [] }],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentUserResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/users/update": {
+      "patch": {
+        "tags": ["Users"],
+        "summary": "Update User info",
+        "security": [{ "Bearer": [] }],
+        "requestBody": {
+          "description": "User data",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/UserUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User successfully updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserUpdateResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {}
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/users/subscribe": {
+      "post": {
+        "tags": ["Users"],
+        "summary": "User subscription",
+        "security": [{ "Bearer": [] }],
+        "requestBody": {
+          "description": "Subscription",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubscribeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful subscription"
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/filters/categories": {
+      "get": {
+        "tags": ["Filters"],
+        "summary": "Categories list",
+        "security": [{ "Bearer": [] }],
+        "responses": {
+          "201": {
+            "description": "Categories list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoriesResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/filters/ingredients": {
+      "get": {
+        "tags": ["Filters"],
+        "summary": "Ingredients list",
+        "security": [{ "Bearer": [] }],
+        "responses": {
+          "200": {
+            "description": "Ingredients list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IngredientsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing header with authorization token"
+          }
+        }
+      }
+    },
+    "/filters/glasses": {
+      "get": {
+        "tags": ["Filters"],
+        "summary": "Glasses list",
+        "security": [{ "Bearer": [] }],
+        "responses": {
+          "201": {
+            "description": "Glasses list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GlassesResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -231,6 +398,150 @@
             "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0ZTVlMmNmYjJiZjkyMTUzYzRhNThiNyIsImlhdCI6MTY5MjgwNjQzMiwiZXhwIjoxNjkyODkyODMyfQ.YAc-Qk0_KRHvlZoDwqrpzQjq2W09AdCh-x97-8pJ2nc"
           }
         }
+      },
+      "CurrentUserResponse": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "User's name",
+            "example": "John"
+          },
+          "email": {
+            "type": "string",
+            "description": "User's email",
+            "format": "email",
+            "example": "john@mail.com"
+          }
+        }
+      },
+      "UserUpdateRequest": {
+        "type": "object",
+        "required": ["name", "avatar"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "User's name",
+            "example": "John"
+          },
+          "avatar": {
+            "type": "string",
+            "description": "User's avatar",
+            "format": "binary"
+          }
+        }
+      },
+      "UserUpdateResponse": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "User's name",
+            "example": "Alex"
+          },
+          "avatarURL": {
+            "type": "string",
+            "description": "User's avatar",
+            "example": "https://placehold.co/600x400"
+          }
+        },
+        "example": {
+          "name": "John",
+          "avatarURL": "https://placehold.co/600x400"
+        }
+      },
+      "SubscribeRequest": {
+        "type": "object",
+        "required": ["email"],
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "User's email",
+            "format": "email"
+          }
+        }
+      },
+      "CategoriesResponse": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "example": ["Ordinary Drink", "Cocktail", "Shake"]
+      },
+      "IngredientsResponse": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "_id": {
+              "type": "string",
+              "description": "Ingredient ID"
+            },
+            "title": {
+              "type": "string",
+              "description": "Name of the ingredient"
+            },
+            "ingredientThumb": {
+              "type": "string",
+              "format": "uri",
+              "description": "URL to ingredient image"
+            },
+            "thumb-medium": {
+              "type": "string",
+              "format": "uri",
+              "description": "URL to ingredient medium image"
+            },
+            "thumb-small": {
+              "type": "string",
+              "format": "uri",
+              "description": "URL to ingredient small image"
+            }
+          }
+        },
+        "required": [
+          "_id",
+          "title",
+          "ingredientThumb",
+          "thumb-medium",
+          "thumb-small"
+        ],
+        "example": [
+          {
+            "_id": "64aebb7f82d96cc69e0eb4fb",
+            "title": "Absolut Citron",
+            "ingredientThumb": "https://res.cloudinary.com/dhgao4rhl/image/upload/v1695487694/ingredients/Absolut20Citron.png",
+            "thumb-medium": "https://res.cloudinary.com/dhgao4rhl/image/upload/v1695487694/ingredients/Absolut20Citron-Medium.png",
+            "thumb-small": "https://res.cloudinary.com/dhgao4rhl/image/upload/v1695487694/ingredients/Absolut20Citron-Small.png",
+            "abv": "40",
+            "alcohol": "Yes",
+            "description": "Absolut Vodka is a brand of vodka, produced near Åhus, in southern Sweden. Absolut is owned by French group Pernod Ricard; they bought Absolut for €5.63 billion in 2008 from the Swedish state. Absolut is the third largest brand of alcoholic spirits in the world after Bacardi and Smirnoff, and is sold in 126 countries.\r\n\r\nAbsolut was established in 1879 by Lars Olsson Smith and is produced in Åhus, Sweden.[1] Smith challenged the city of Stockholm's liquor marketing monopoly with his vodka. It was sold at a lower price than the monopoly's product, just outside the city border. Smith even offered free boat rides to the distillery and \"Rent Brännvin\" made Smith a fortune.\r\n\r\nIn 1917, the alcohol industry in Sweden was monopolized by the Swedish government. Vodka was then sold nationwide under the name \"Absolut Rent Brännvin\". The name changed with intervals, Renat Brännvin or Absolut Rent Brännvin. In 1979, the old name Absolut was picked up when the upper-price range ABSOLUT VODKA was introduced. Renat is still a euphemism for spirits in Sweden, and the name of another vodka product by Vin & Sprit.\r\n\r\n\r\nAbsolut Vodka was introduced to the global market in 1979. Since its launch, Absolut has grown from 90,000 liters to 96.6 million liters in 2008. It has become the largest international spirit and is available in 126 countries. The vodka is made from winter wheat. Approximately 80,000 metric tons (2,900,000 bushels) of wheat are used annually to produce Absolut Vodka. Over one kilogram of grain is used in every one-liter bottle.",
+            "type": "Vodka",
+            "flavour": "International spirit",
+            "country": "Sweden",
+            "updatedAt": "2023-09-23T21:09:05.491Z"
+          },
+          {
+            "_id": "64aebb7f82d96cc69e0eb504",
+            "title": "7-Up",
+            "ingredientThumb": "https://res.cloudinary.com/dhgao4rhl/image/upload/v1695487694/ingredients/7-Up.png",
+            "thumb-medium": "https://res.cloudinary.com/dhgao4rhl/image/upload/v1695487694/ingredients/7-Up-Medium.png",
+            "thumb-small": "https://res.cloudinary.com/dhgao4rhl/image/upload/v1695487694/ingredients/7-Up-Small.png",
+            "abv": "0",
+            "alcohol": "No",
+            "description": "7 Up (stylized as 7up outside of the U.S.) is a brand of lemon-lime flavoured, non-caffeinated soft drink. The rights to the brand are held by Dr Pepper Snapple Group in the United States, and PepsiCo (or its licensees) in the rest of the world. The U.S. version of the 7 Up logo includes a red cherry between the \"7\" and \"Up\"; this red cherry has been animated and used as a mascot for the brand as Cool Spot.\r\n\r\n7 Up was created by Charles Leiper Grigg, who launched his St. Louis–based company The Howdy Corporation in 1920.[1] Grigg came up with the formula for a lemon-lime soft drink in 1929. The product, originally named \"Bib-Label Lithiated Lemon-Lime Soda\", was launched two weeks before the Wall Street Crash of 1929.[2] It contained lithium citrate, a mood-stabilizing drug, until 1950.[3] It was one of a number of patent medicine products popular in the late-19th and early-20th centuries. Its name was later shortened to \"7 Up Lithiated Lemon Soda\" before being further shortened to just \"7 Up\" by 1936.\r\n\r\nWestinghouse bought 7 Up in 1969 and sold it in 1978 to Philip Morris, who then in 1986 sold it to a group led by the investment firm Hicks & Haas.[4] 7 Up merged with Dr Pepper in 1988; Cadbury Schweppes bought the combined company in 1995. The Dr Pepper Snapple Group was spun off from Cadbury Schweppes in 2008.\r\n\r\n7 Up has been reformulated several times since its launch in 1929. In 2006, the version of the product sold in the U.S. was re-formulated so that it could be marketed as being \"100 natural\". This was achieved by eliminating the chelating-agent calcium disodium EDTA, and replacing sodium citrate with potassium citrate in order to reduce the beverage's sodium content.[5] This re-formulation contains no fruit juice and, in the U.S., is sweetened with high-fructose corn syrup (HFCS). The manufacturing process used in the production of HFCS has led some public health and advocacy groups to challenge the ad campaign's \"natural\" claims.[6] In 2007, after the Center for Science in the Public Interest threatened to sue 7 Up, it was announced that 7 Up would stop being marketed as \"100 natural\". Instead, it is now promoted as having \"100 Natural flavours\". The controversy does not extend to other countries, such as the United Kingdom, where HFCS is not generally used in foods, including 7 Up. In 2011, 7 Up began test-marketing a formula, called 7 Up Retro, using sugar rather than HFCS. Container labels sport the caption, \"Made With Real Sugar\".\r\n\r\nThere exists a myth that the 7 Up name comes from the drink having a pH over 7. That would make it neutral or basic on the scale; however, this is not the case, as the 7 Up pH is close to 3.79, similar to other drinks of the type.[7] The real origin of the name is unclear,[8] though Britvic claims that the name comes from the seven main ingredients in the drink,[9] while others have claimed that the number was a coded reference to the lithium contained in the original recipe, which has an atomic mass of approximately 7.",
+            "type": "Soft Drink",
+            "flavour": "sugar",
+            "country": "United States",
+            "updatedAt": "2023-09-23T21:09:05.491Z"
+          }
+        ]
+      },
+      "GlassesResponse": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "example": ["Highball glass", "Cocktail glass", "Old-fashioned glass"]
       },
       "securitySchemes": {
         "Bearer": {
