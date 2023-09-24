@@ -12,11 +12,12 @@ const getCurrent = async (req, res) => {
   const { _id, email, name, avatarURL, token } = req.user;
 
   res.json({
-    _id,
-    email,
-    name,
-    avatarURL,
     token,
+    user: {
+      email,
+      name,
+      avatarURL,
+    },
   });
 };
 
