@@ -9,7 +9,7 @@ const { HttpError, controllerWrapper } = require("../helpers");
 const { BASE_URL } = process.env;
 
 const getCurrent = async (req, res) => {
-  const { _id, email, name, avatarURL, token } = req.user;
+  const { email, name, avatarURL, token } = req.user;
 
   res.json({
     token,
