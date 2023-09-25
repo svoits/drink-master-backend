@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "version": "1.0.1",
+    "version": "1.0.2",
     "title": "Drink Master API",
     "description": "Backend for the Drink Master app",
     "license": {
@@ -239,13 +239,13 @@
         }
       }
     },
-    "/filters/categories": {
+    "/api/filters/categories": {
       "get": {
         "tags": ["Filters"],
         "summary": "Categories list",
         "security": [{ "Bearer": [] }],
         "responses": {
-          "201": {
+          "200": {
             "description": "Categories list",
             "content": {
               "application/json": {
@@ -261,7 +261,7 @@
         }
       }
     },
-    "/filters/ingredients": {
+    "/api/filters/ingredients": {
       "get": {
         "tags": ["Filters"],
         "summary": "Ingredients list",
@@ -278,18 +278,18 @@
             }
           },
           "401": {
-            "description": "Missing header with authorization token"
+            "description": "Unauthorized"
           }
         }
       }
     },
-    "/filters/glasses": {
+    "/api/filters/glasses": {
       "get": {
         "tags": ["Filters"],
         "summary": "Glasses list",
         "security": [{ "Bearer": [] }],
         "responses": {
-          "201": {
+          "200": {
             "description": "Glasses list",
             "content": {
               "application/json": {
@@ -301,6 +301,190 @@
           },
           "401": {
             "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/drinks/mainpage": {
+      "get": {
+        "tags": ["Drinks"],
+        "summary": "Gets 3 drinks for all categories",
+        "security": [{ "Bearer": [] }],
+        "responses": {
+          "201": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MainpageResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/drinks/popular": {
+      "get": {
+        "tags": ["Drinks"],
+        "summary": "Gets popular drinks",
+        "security": [{ "Bearer": [] }],
+        "responses": {
+          "200": {
+            "description": "Success response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PopularDrinksResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/api/drinks/search": {
+      "get": {
+        "tags": ["Drinks"],
+        "summary": "Search Drinks",
+        "security": [{ "Bearer": [] }],
+        "description": "Allows searching for drinks based on various parameters.",
+        "parameters": [
+          {
+            "name": "ingredient",
+            "in": "query",
+            "description": "Ingredient used in the drink",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "query",
+            "in": "query",
+            "description": "Search query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "description": "Drink category",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number of results",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Number of results per page",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchDrinksResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/api/drinks/{id}": {
+      "get": {
+        "tags": ["Drinks"],
+        "summary": "Get drink by id",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "objectId",
+              "description": "Drink id"
+            },
+            "description": "Drink id"
+          }
+        ],
+        "security": [{ "Bearer": [] }],
+        "responses": {
+          "200": {
+            "description": "Success response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DrinkByIdResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/api/drinks/own/add": {
+      "post": {
+        "tags": ["Drinks"],
+        "summary": "Add user's recipe",
+        "security": [{ "Bearer": [] }],
+        "requestBody": {
+          "description": "User's recipe object",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/AddOwnDrinkRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Recipe is added",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddOwnDrinkResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing header with authorization token"
+          },
+          "404": {
+            "description": "Wrong ingredient title"
           }
         }
       }
@@ -402,16 +586,31 @@
       "CurrentUserResponse": {
         "type": "object",
         "properties": {
-          "name": {
-            "type": "string",
-            "description": "User's name",
-            "example": "John"
+          "user": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "User's name",
+                "example": "John"
+              },
+              "email": {
+                "type": "string",
+                "description": "User's email",
+                "format": "email",
+                "example": "john@mail.com"
+              },
+              "avatarURL": {
+                "type": "string",
+                "description": "User's avatar",
+                "example": "//www.gravatar.com/avatar/265e97cb1b328b88c485ea82e9dee465"
+              }
+            }
           },
-          "email": {
+          "token": {
             "type": "string",
-            "description": "User's email",
-            "format": "email",
-            "example": "john@mail.com"
+            "description": "User's token (needed for all requests)",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0ZTVlMmNmYjJiZjkyMTUzYzRhNThiNyIsImlhdCI6MTY5MjgwNjQzMiwiZXhwIjoxNjkyODkyODMyfQ.YAc-Qk0_KRHvlZoDwqrpzQjq2W09AdCh-x97-8pJ2nc"
           }
         }
       },
@@ -495,16 +694,13 @@
               "type": "string",
               "format": "uri",
               "description": "URL to ingredient small image"
+            },
+            "abv": {
+              "type": "string",
+              "description": "Ingredient's abv"
             }
           }
         },
-        "required": [
-          "_id",
-          "title",
-          "ingredientThumb",
-          "thumb-medium",
-          "thumb-small"
-        ],
         "example": [
           {
             "_id": "64aebb7f82d96cc69e0eb4fb",
@@ -542,6 +738,918 @@
           "type": "string"
         },
         "example": ["Highball glass", "Cocktail glass", "Old-fashioned glass"]
+      },
+      "MainpageResponse": {
+        "type": "object",
+        "properties": {
+          "Ordinary Drink": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "_id": {
+                  "type": "string"
+                },
+                "drink": {
+                  "type": "string"
+                },
+                "drinkAlternate": {
+                  "type": "string"
+                },
+                "tags": {
+                  "type": "string"
+                },
+                "video": {
+                  "type": "string"
+                },
+                "category": {
+                  "type": "string"
+                },
+                "IBA": {
+                  "type": "string"
+                },
+                "alcoholic": {
+                  "type": "string"
+                },
+                "glass": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "instructions": {
+                  "type": "string"
+                },
+                "instructionsES": {
+                  "type": "string"
+                },
+                "instructionsDE": {
+                  "type": "string"
+                },
+                "instructionsFR": {
+                  "type": "string"
+                },
+                "instructionsIT": {
+                  "type": "string"
+                },
+                "instructionsRU": {
+                  "type": "string"
+                },
+                "instructionsPL": {
+                  "type": "string"
+                },
+                "instructionsUK": {
+                  "type": "string"
+                },
+                "drinkThumb": {
+                  "type": "string"
+                },
+                "ingredients": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string"
+                      },
+                      "title": {
+                        "type": "string"
+                      },
+                      "measure": {
+                        "type": "string"
+                      },
+                      "ingredientId": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "shortDescription": {
+                  "type": "string"
+                },
+                "updatedAt": {
+                  "type": "string"
+                },
+                "users": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "example": {
+          "Ordinary Drink": [
+            {
+              "_id": "639b6de9ff77d221f190c50f",
+              "drink": "Quentin",
+              "drinkAlternate": "Sorry, not specified",
+              "tags": "IBA,ContemporaryClassic",
+              "video": "https://www.youtube.com/watch?v=2jtoa_t7g94",
+              "category": "Ordinary Drink",
+              "IBA": "Contemporary Classics",
+              "alcoholic": "Alcoholic",
+              "glass": "Cocktail glass",
+              "description": "Quentin is a refreshing cocktail that combines the flavors of citrus and mint. It is made with fresh lime juice, orange liqueur, and a touch of mint syrup. The drink is served over ice and garnished with a sprig of mint. It is the perfect beverage for a hot summer day.",
+              "instructions": "In a shaker half-filled with ice cubes, combine the rum, Kahlua, and cream. Shake well. Strain into a cocktail glass and garnish with the nutmeg.",
+              "instructionsES": "En una coctelera llena hasta la mitad con cubitos de hielo, combine el ron, Kahlua y la crema. Agite bien. Colar en una copa de cóctel y decorar con la nuez moscada.",
+              "instructionsDE": "In einem Shaker, der halb mit Eiswürfeln gefüllt ist, Rum, Kahlua und Sahne mischen. Gut schütteln. In ein Cocktailglas abseihen und mit der Muskatnuss garnieren.",
+              "instructionsFR": "Dans un shaker à moitié rempli de glaçons, mélanger le rhum, le Kahlua et la crème. Bien agiter. Versez dans un verre à cocktail et décorez avec la noix de muscade.",
+              "instructionsIT": "In uno shaker riempito a metà con cubetti di ghiaccio, unire il rum, il Kahlua e la panna. Filtrare in una coppetta da cocktail e guarnire con la noce moscata. Agitare bene.",
+              "instructionsRU": "В шейкере, наполовину наполненном кубиками льда, смешайте ром, Калуа и сливки. Хорошо встряхнуть. Процедите в коктейльный бокал и украсьте мускатным орехом.",
+              "instructionsPL": "W shakerze wypełnionym do połowy kostkami lodu wymieszać rum, Kahlua i śmietanę. Dobrze wstrząsnąć. Przelej do kieliszka koktajlowego i udekoruj gałką muszkatołową.",
+              "instructionsUK": "У шейкері, наповненому наполовину кубиками льоду, змішайте ром, Калуа та вершки. Добре струсити. Процідіть у келих для коктейлю та прикрасьте мускатним горіхом.",
+              "drinkThumb": "https://res.cloudinary.com/dhgao4rhl/image/upload/v1695485912/drinks/Quentin.jpg",
+              "ingredients": [
+                {
+                  "_id": "6511941185adc8f5224701df",
+                  "title": "Dark rum",
+                  "measure": "1 1/2 oz ",
+                  "ingredientId": "64aebb7f82d96cc69e0eb4a7"
+                },
+                {
+                  "_id": "6511941185adc8f5224701e0",
+                  "title": "Kahlua",
+                  "measure": "1/2 oz ",
+                  "ingredientId": "64aebb7f82d96cc69e0eb4bd"
+                },
+                {
+                  "_id": "6511941185adc8f5224701e1",
+                  "title": "Light cream",
+                  "measure": "1 oz ",
+                  "ingredientId": "64f1d5c069d8333cf130fb31"
+                },
+                {
+                  "_id": "6511941185adc8f5224701e2",
+                  "title": "Nutmeg",
+                  "measure": "1/8 tsp grated ",
+                  "ingredientId": "64f1d5c069d8333cf130fb34"
+                }
+              ],
+              "shortDescription": "A refreshing and citrusy cocktail with a hint of mint.",
+              "updatedAt": "2023-09-25T10:18:17.409Z",
+              "users": ["65101016b13a820a64d3f012", "650c4d956fd5d12af3f7543b"]
+            }
+          ]
+        }
+      },
+      "PopularDrinksResponse": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "_id": {
+                  "type": "string"
+                },
+                "drink": {
+                  "type": "string"
+                },
+                "drinkAlternate": {
+                  "type": "string"
+                },
+                "tags": {
+                  "type": "string"
+                },
+                "video": {
+                  "type": "string"
+                },
+                "category": {
+                  "type": "string"
+                },
+                "IBA": {
+                  "type": "string"
+                },
+                "alcoholic": {
+                  "type": "string"
+                },
+                "glass": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "instructions": {
+                  "type": "string"
+                },
+                "instructionsES": {
+                  "type": "string"
+                },
+                "instructionsDE": {
+                  "type": "string"
+                },
+                "instructionsFR": {
+                  "type": "string"
+                },
+                "instructionsIT": {
+                  "type": "string"
+                },
+                "instructionsRU": {
+                  "type": "string"
+                },
+                "instructionsPL": {
+                  "type": "string"
+                },
+                "instructionsUK": {
+                  "type": "string"
+                },
+                "drinkThumb": {
+                  "type": "string"
+                },
+                "ingredients": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "title": {
+                        "type": "string"
+                      },
+                      "measure": {
+                        "type": "string"
+                      },
+                      "ingredientId": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "shortDescription": {
+                  "type": "string"
+                },
+                "updatedAt": {
+                  "type": "string"
+                },
+                "users": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "example": {
+          "result": [
+            {
+              "_id": "639b6de9ff77d221f190c54c",
+              "drink": "Pure Passion",
+              "drinkAlternate": "Sorry, not specified",
+              "tags": "Passion",
+              "video": "Sorry, not specified",
+              "category": "Cocktail",
+              "IBA": "Sorry, not specified",
+              "alcoholic": "Alcoholic",
+              "glass": "Whiskey sour glass",
+              "description": "Pure Passion is a passionate and tropical cocktail that captures the essence of exotic fruits. It is made with passion fruit juice, rum, lime juice, and a touch of sugar. The combination of flavors creates a refreshing and vibrant drink that is perfect for lounging by the pool or enjoying a summer evening with friends. Indulge in the pure passion of this delightful cocktail.",
+              "instructions": "Mix up all ingredients with a cocktail stirrer and serve with crushed ice with mint and edible flour if available.",
+              "instructionsES": "Mezcle todos los ingredientes con un agitador de cóctel y sirva con hielo picado con menta y harina comestible si está disponible.",
+              "instructionsDE": "Alle Zutaten mit einem Cocktailrührer mixen und mit Crushed Ice mit Minze und Speisemehl, falls vorhanden, servieren.",
+              "instructionsFR": "Mélangez tous les ingrédients avec un agitateur à cocktail et servez avec de la glace pilée à la menthe et de la farine alimentaire si disponible.",
+              "instructionsIT": "Mescolare tutti gli ingredienti con un agitatore per cocktail e servire con ghiaccio tritato con menta e farina commestibile se disponibile.",
+              "instructionsRU": "Смешайте все ингредиенты миксером для коктейлей и подавайте с колотым льдом с мятой и пищевой мукой, если таковая имеется.",
+              "instructionsPL": "Wymieszaj wszystkie składniki za pomocą mieszadła do koktajli i podawaj z kruszonym lodem z miętą i mąką jadalną, jeśli jest dostępna.",
+              "instructionsUK": "Змішайте всі інгредієнти мішалкою для коктейлів і подавайте з колотим льодом з м'ятою і харчовим борошном, якщо є.",
+              "drinkThumb": "https://res.cloudinary.com/dhgao4rhl/image/upload/v1695485912/drinks/Pure_Passion.jpg",
+              "ingredients": [
+                {
+                  "title": "Rum",
+                  "measure": "40 ml",
+                  "ingredientId": "64aebb7f82d96cc69e0eb4cb"
+                },
+                {
+                  "title": "Passoa",
+                  "measure": "20 ml",
+                  "ingredientId": "64f1d5c169d8333cf130fb52"
+                },
+                {
+                  "title": "Lime Juice",
+                  "measure": "30 ml",
+                  "ingredientId": "64aebb7f82d96cc69e0eb4c1"
+                },
+                {
+                  "title": "Passion fruit syrup",
+                  "measure": "15 ml",
+                  "ingredientId": "64f1d5c169d8333cf130fb55"
+                },
+                {
+                  "title": "Peach Bitters",
+                  "measure": "Dash",
+                  "ingredientId": "64f1d5c269d8333cf130fb58"
+                },
+                {
+                  "title": "Mint",
+                  "measure": "Garnish with",
+                  "ingredientId": "64f1d5c269d8333cf130fb5b"
+                }
+              ],
+              "shortDescription": "A passionate and tropical cocktail with passion fruit, rum, and citrus juices.",
+              "updatedAt": "2023-09-25T10:00:51.360Z",
+              "users": ["65101016b13a820a64d3f012", "6511587d2be01e5a1d7d101c"],
+              "popularity": 2
+            }
+          ]
+        }
+      },
+      "SearchDrinksResponse": {
+        "type": "object",
+        "properties": {
+          "total": {
+            "type": "integer",
+            "description": "Total number of drinks found in the search"
+          },
+          "drinks": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "_id": {
+                  "type": "string",
+                  "description": "Unique identifier for the drink"
+                },
+                "drink": {
+                  "type": "string",
+                  "description": "Name of the drink"
+                },
+                "drinkAlternate": {
+                  "type": "string",
+                  "description": "Alternate name for the drink"
+                },
+                "tags": {
+                  "type": "string",
+                  "description": "Tags associated with the drink"
+                },
+                "video": {
+                  "type": "string",
+                  "description": "Link to a video about the drink"
+                },
+                "category": {
+                  "type": "string",
+                  "description": "Category of the drink"
+                },
+                "IBA": {
+                  "type": "string",
+                  "description": "International Bartenders Association (IBA) category"
+                },
+                "alcoholic": {
+                  "type": "string",
+                  "description": "Alcoholic content of the drink"
+                },
+                "glass": {
+                  "type": "string",
+                  "description": "Type of glass used for the drink"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "Description of the drink"
+                },
+                "instructions": {
+                  "type": "string",
+                  "description": "Instructions for making the drink (in English)"
+                },
+                "instructionsES": {
+                  "type": "string",
+                  "description": "Instructions for making the drink (in Spanish)"
+                },
+                "instructionsDE": {
+                  "type": "string",
+                  "description": "Instructions for making the drink (in German)"
+                },
+                "instructionsFR": {
+                  "type": "string",
+                  "description": "Instructions for making the drink (in French)"
+                },
+                "instructionsIT": {
+                  "type": "string",
+                  "description": "Instructions for making the drink (in Italian)"
+                },
+                "instructionsRU": {
+                  "type": "string",
+                  "description": "Instructions for making the drink (in Russian)"
+                },
+                "instructionsPL": {
+                  "type": "string",
+                  "description": "Instructions for making the drink (in Polish)"
+                },
+                "instructionsUK": {
+                  "type": "string",
+                  "description": "Instructions for making the drink (in Ukrainian)"
+                },
+                "drinkThumb": {
+                  "type": "string",
+                  "description": "URL of the drink's image"
+                },
+                "ingredients": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "description": "Unique identifier for the ingredient"
+                      },
+                      "title": {
+                        "type": "string",
+                        "description": "Name of the ingredient"
+                      },
+                      "measure": {
+                        "type": "string",
+                        "description": "Measurement quantity of the ingredient"
+                      },
+                      "ingredientId": {
+                        "type": "string",
+                        "description": "Unique identifier for the ingredient in the database"
+                      }
+                    }
+                  },
+                  "description": "List of ingredients used in the drink"
+                },
+                "shortDescription": {
+                  "type": "string",
+                  "description": "Short description of the drink"
+                },
+                "updatedAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "Date and time when the drink information was last updated"
+                },
+                "users": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "User IDs associated with the drink"
+                  },
+                  "description": "List of user IDs who contributed to the drink information"
+                }
+              }
+            },
+            "description": "List of drinks matching the search criteria"
+          }
+        },
+        "example": {
+          "total": 1,
+          "drinks": [
+            {
+              "_id": "639b6de9ff77d221f190c50f",
+              "drink": "Quentin",
+              "drinkAlternate": "Sorry, not specified",
+              "tags": "IBA,ContemporaryClassic",
+              "video": "https://www.youtube.com/watch?v=2jtoa_t7g94",
+              "category": "Ordinary Drink",
+              "IBA": "Contemporary Classics",
+              "alcoholic": "Alcoholic",
+              "glass": "Cocktail glass",
+              "description": "Quentin is a refreshing cocktail that combines the flavors of citrus and mint. It is made with fresh lime juice, orange liqueur, and a touch of mint syrup. The drink is served over ice and garnished with a sprig of mint. It is the perfect beverage for a hot summer day.",
+              "instructions": "In a shaker half-filled with ice cubes, combine the rum, Kahlua, and cream. Shake well. Strain into a cocktail glass and garnish with the nutmeg.",
+              "instructionsES": "En una coctelera llena hasta la mitad con cubitos de hielo, combine el ron, Kahlua y la crema. Agite bien. Colar en una copa de cóctel y decorar con la nuez moscada.",
+              "instructionsDE": "In einem Shaker, der halb mit Eiswürfeln gefüllt ist, Rum, Kahlua und Sahne mischen. Gut schütteln. In ein Cocktailglas abseihen und mit der Muskatnuss garnieren.",
+              "instructionsFR": "Dans un shaker à moitié rempli de glaçons, mélanger le rhum, le Kahlua et la crème. Bien agiter. Versez dans un verre à cocktail et décorez avec la noix de muscade.",
+              "instructionsIT": "In uno shaker riempito a metà con cubetti di ghiaccio, unire il rum, il Kahlua e la panna. Filtrare in una coppetta da cocktail e guarnire con la noce moscata. Agitare bene.",
+              "instructionsRU": "В шейкере, наполовину наполненном кубиками льда, смешайте ром, Калуа и сливки. Хорошо встряхнуть. Процедите в коктейльный бокал и украсьте мускатным орехом.",
+              "instructionsPL": "W shakerze wypełnionym do połowy kostkami lodu wymieszać rum, Kahlua i śmietanę. Dobrze wstrząsnąć. Przelej do kieliszka koktajlowego i udekoruj gałką muszkatołową.",
+              "instructionsUK": "У шейкері, наповненому наполовину кубиками льоду, змішайте ром, Калуа та вершки. Добре струсити. Процідіть у келих для коктейлю та прикрасьте мускатним горіхом.",
+              "drinkThumb": "https://res.cloudinary.com/dhgao4rhl/image/upload/v1695485912/drinks/Quentin.jpg",
+              "ingredients": [
+                {
+                  "_id": "65119ebd93a295a9f657474a",
+                  "title": "Dark rum",
+                  "measure": "1 1/2 oz ",
+                  "ingredientId": "64aebb7f82d96cc69e0eb4a7"
+                },
+                {
+                  "_id": "65119ebd93a295a9f657474b",
+                  "title": "Kahlua",
+                  "measure": "1/2 oz ",
+                  "ingredientId": "64aebb7f82d96cc69e0eb4bd"
+                },
+                {
+                  "_id": "65119ebd93a295a9f657474c",
+                  "title": "Light cream",
+                  "measure": "1 oz ",
+                  "ingredientId": "64f1d5c069d8333cf130fb31"
+                },
+                {
+                  "_id": "65119ebd93a295a9f657474d",
+                  "title": "Nutmeg",
+                  "measure": "1/8 tsp grated ",
+                  "ingredientId": "64f1d5c069d8333cf130fb34"
+                }
+              ],
+              "shortDescription": "A refreshing and citrusy cocktail with a hint of mint.",
+              "updatedAt": "2023-09-25T10:18:17.409Z",
+              "users": ["65101016b13a820a64d3f012", "650c4d956fd5d12af3f7543b"]
+            }
+          ]
+        }
+      },
+      "DrinkByIdResponse": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Unique identifier for the drink"
+          },
+          "drink": {
+            "type": "string",
+            "description": "Name of the drink"
+          },
+          "drinkAlternate": {
+            "type": "string",
+            "description": "Alternate name for the drink"
+          },
+          "tags": {
+            "type": "string",
+            "description": "Tags associated with the drink"
+          },
+          "video": {
+            "type": "string",
+            "description": "Link to a video about the drink"
+          },
+          "category": {
+            "type": "string",
+            "description": "Category of the drink"
+          },
+          "IBA": {
+            "type": "string",
+            "description": "International Bartenders Association (IBA) category"
+          },
+          "alcoholic": {
+            "type": "string",
+            "description": "Alcoholic content of the drink"
+          },
+          "glass": {
+            "type": "string",
+            "description": "Type of glass used for the drink"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of the drink"
+          },
+          "instructions": {
+            "type": "string",
+            "description": "Instructions for making the drink (in English)"
+          },
+          "instructionsES": {
+            "type": "string",
+            "description": "Instructions for making the drink (in Spanish)"
+          },
+          "instructionsDE": {
+            "type": "string",
+            "description": "Instructions for making the drink (in German)"
+          },
+          "instructionsFR": {
+            "type": "string",
+            "description": "Instructions for making the drink (in French)"
+          },
+          "instructionsIT": {
+            "type": "string",
+            "description": "Instructions for making the drink (in Italian)"
+          },
+          "instructionsRU": {
+            "type": "string",
+            "description": "Instructions for making the drink (in Russian)"
+          },
+          "instructionsPL": {
+            "type": "string",
+            "description": "Instructions for making the drink (in Polish)"
+          },
+          "instructionsUK": {
+            "type": "string",
+            "description": "Instructions for making the drink (in Ukrainian)"
+          },
+          "drinkThumb": {
+            "type": "string",
+            "description": "URL of the drink's image"
+          },
+          "ingredients": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "_id": {
+                  "type": "string",
+                  "description": "Unique identifier for the ingredient"
+                },
+                "title": {
+                  "type": "string",
+                  "description": "Name of the ingredient"
+                },
+                "measure": {
+                  "type": "string",
+                  "description": "Measurement quantity of the ingredient"
+                },
+                "ingredientId": {
+                  "type": "string",
+                  "description": "Unique identifier for the ingredient in the database"
+                }
+              }
+            },
+            "description": "List of ingredients used in the drink"
+          },
+          "shortDescription": {
+            "type": "string",
+            "description": "Short description of the drink"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date and time when the drink information was last updated"
+          },
+          "users": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "description": "User IDs associated with the drink"
+            },
+            "description": "List of user IDs who contributed to the drink information"
+          }
+        },
+        "example": {
+          "_id": "639b6de9ff77d221f190c50f",
+          "drink": "Quentin",
+          "drinkAlternate": "Sorry, not specified",
+          "tags": "IBA,ContemporaryClassic",
+          "video": "https://www.youtube.com/watch?v=2jtoa_t7g94",
+          "category": "Ordinary Drink",
+          "IBA": "Contemporary Classics",
+          "alcoholic": "Alcoholic",
+          "glass": "Cocktail glass",
+          "description": "Quentin is a refreshing cocktail that combines the flavors of citrus and mint. It is made with fresh lime juice, orange liqueur, and a touch of mint syrup. The drink is served over ice and garnished with a sprig of mint. It is the perfect beverage for a hot summer day.",
+          "instructions": "In a shaker half-filled with ice cubes, combine the rum, Kahlua, and cream. Shake well. Strain into a cocktail glass and garnish with the nutmeg.",
+          "instructionsES": "En una coctelera llena hasta la mitad con cubitos de hielo, combine el ron, Kahlua y la crema. Agite bien. Colar en una copa de cóctel y decorar con la nuez moscada.",
+          "instructionsDE": "In einem Shaker, der halb mit Eiswürfeln gefüllt ist, Rum, Kahlua und Sahne mischen. Gut schütteln. In ein Cocktailglas abseihen und mit der Muskatnuss garnieren.",
+          "instructionsFR": "Dans un shaker à moitié rempli de glaçons, mélanger le rhum, le Kahlua et la crème. Bien agiter. Versez dans un verre à cocktail et décorez avec la noix de muscade.",
+          "instructionsIT": "In uno shaker riempito a metà con cubetti di ghiaccio, unire il rum, il Kahlua e la panna. Filtrare in una coppetta da cocktail e guarnire con la noce moscata. Agitare bene.",
+          "instructionsRU": "В шейкере, наполовину наполненном кубиками льда, смешайте ром, Калуа и сливки. Хорошо встряхнуть. Процедите в коктейльный бокал и украсьте мускатным орехом.",
+          "instructionsPL": "W shakerze wypełnionym do połowy kostkami lodu wymieszać rum, Kahlua i śmietanę. Dobrze wstrząsnąć. Przelej do kieliszka koktajlowego i udekoruj gałką muszkatołową.",
+          "instructionsUK": "У шейкері, наповненому наполовину кубиками льоду, змішайте ром, Калуа та вершки. Добре струсити. Процідіть у келих для коктейлю та прикрасьте мускатним горіхом.",
+          "drinkThumb": "https://res.cloudinary.com/dhgao4rhl/image/upload/v1695485912/drinks/Quentin.jpg",
+          "ingredients": [
+            {
+              "_id": "6511a3c00ca71abd32446f2e",
+              "title": "Dark rum",
+              "measure": "1 1/2 oz ",
+              "ingredientId": "64aebb7f82d96cc69e0eb4a7"
+            },
+            {
+              "_id": "6511a3c00ca71abd32446f2f",
+              "title": "Kahlua",
+              "measure": "1/2 oz ",
+              "ingredientId": "64aebb7f82d96cc69e0eb4bd"
+            },
+            {
+              "_id": "6511a3c00ca71abd32446f30",
+              "title": "Light cream",
+              "measure": "1 oz ",
+              "ingredientId": "64f1d5c069d8333cf130fb31"
+            },
+            {
+              "_id": "6511a3c00ca71abd32446f31",
+              "title": "Nutmeg",
+              "measure": "1/8 tsp grated ",
+              "ingredientId": "64f1d5c069d8333cf130fb34"
+            }
+          ],
+          "shortDescription": "A refreshing and citrusy cocktail with a hint of mint.",
+          "updatedAt": "2023-09-25T10:18:17.409Z",
+          "users": ["65101016b13a820a64d3f012", "650c4d956fd5d12af3f7543b"]
+        }
+      },
+      "AddOwnDrinkRequest": {
+        "type": "object",
+        "required": [
+          "drink",
+          "category",
+          "glass",
+          "instructions",
+          "ingredients",
+          "recipe"
+        ],
+        "properties": {
+          "drink": {
+            "type": "string",
+            "description": "Drink name"
+          },
+          "description": {
+            "type": "string",
+            "description": "Drink description"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "Ordinary Drink",
+              "Cocktail",
+              "Shake",
+              "Other",
+              "Cocoa",
+              "Shot",
+              "Coffee / Tea",
+              "Homemade Liqueur",
+              "Punch / Party Drink",
+              "Beer",
+              "Soft Drink"
+            ],
+            "description": "Select drink category"
+          },
+          "glass": {
+            "type": "string",
+            "enum": [
+              "Highball glass",
+              "Cocktail glass",
+              "Old-fashioned glass",
+              "Whiskey Glass",
+              "Collins glass",
+              "Pousse cafe glass",
+              "Champagne flute",
+              "Whiskey sour glass",
+              "Cordial glass",
+              "Brandy snifter",
+              "White wine glass",
+              "Nick and Nora Glass",
+              "Hurricane glass",
+              "Coffee mug",
+              "Shot glass",
+              "Jar",
+              "Irish coffee cup",
+              "Punch bowl",
+              "Pitcher",
+              "Pint glass",
+              "Copper Mug",
+              "Wine Glass",
+              "Beer mug",
+              "Margarita / Coupette glass",
+              "Beer pilsner",
+              "Beer Glass",
+              "Parfait glass",
+              "Mason jar",
+              "Margarita glass",
+              "Martini Glass",
+              "Balloon Glass",
+              "Coupe Glass"
+            ],
+            "description": "Select type of glass for drink"
+          },
+          "instructions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Instructions for drink preparation"
+          },
+          "ingredients": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "description": "Drink ingredient's title"
+                },
+                "measure": {
+                  "type": "string",
+                  "description": "Drink ingredient's measure"
+                }
+              },
+              "description": "Drink ingredients"
+            }
+          },
+          "recipe": {
+            "type": "string",
+            "description": "Drink's photo",
+            "format": "binary"
+          }
+        },
+        "example": {
+          "drink": "Quentin",
+          "description": "some description",
+          "category": "Ordinary Drink",
+          "glass": "Cocktail glass",
+          "instructions": [
+            "In a shaker half-filled with ice cubes, combine the rum, Kahlua, and cream. Shake well.",
+            "Strain into a cocktail glass and garnish with the nutmeg."
+          ],
+          "ingredients": [
+            {
+              "title": "Light rum",
+              "measure": "2 oz"
+            },
+            {
+              "title": "Applejack",
+              "measure": "2 oz"
+            }
+          ],
+          "recipe": "file"
+        }
+      },
+      "AddOwnDrinkResponse": {
+        "type": "object",
+        "properties": {
+          "drink": {
+            "type": "string",
+            "description": "Name of the drink"
+          },
+          "drinkAlternate": {
+            "type": "string",
+            "description": "Alternate name for the drink"
+          },
+          "category": {
+            "type": "string",
+            "description": "Category of the drink"
+          },
+          "alcoholic": {
+            "type": "string",
+            "description": "Alcoholic content of the drink"
+          },
+          "glass": {
+            "type": "string",
+            "description": "Type of glass used for the drink"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of the drink"
+          },
+          "drinkThumb": {
+            "type": "string",
+            "description": "URL of the drink's image"
+          },
+          "ingredients": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "description": "Name of the ingredient"
+                },
+                "ingredientId": {
+                  "type": "string",
+                  "description": "Unique identifier for the ingredient"
+                },
+                "_id": {
+                  "type": "string",
+                  "description": "Unique identifier for the ingredient in this drink"
+                }
+              }
+            },
+            "description": "List of ingredients used in the drink"
+          },
+          "owner": {
+            "type": "string",
+            "description": "Owner of the drink"
+          },
+          "users": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "description": "User IDs associated with the drink"
+            },
+            "description": "List of user IDs related to the drink"
+          },
+          "_id": {
+            "type": "string",
+            "description": "Unique identifier for the drink"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date and time when the drink was created"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date and time when the drink information was last updated"
+          }
+        },
+        "example": {
+          "drink": "2222DRINK12321312312223",
+          "drinkAlternate": "Sorry, not specified",
+          "category": "Ordinary Drink",
+          "alcoholic": "Non alcoholic",
+          "glass": "Cocktail glass",
+          "description": "Quentin is a refreshing cocktail that combines the flavors of citrus and mint. It is made with fresh lime juice, orange liqueur, and a touch of mint syrup. The drink is served over ice and garnished with a sprig of mint. It is the perfect beverage for a hot summer day.",
+          "drinkThumb": "https://res.cloudinary.com/dhgao4rhl/image/upload/v1695656397/drinks/bwvbovoe4el5vu841nml.jpg",
+          "ingredients": [
+            {
+              "title": "Light rum",
+              "ingredientId": "64aebb7f82d96cc69e0eb4a4",
+              "_id": "6511a9ceba26bf4a3dfab269"
+            },
+            {
+              "title": "Applejack",
+              "ingredientId": "64aebb7f82d96cc69e0eb4a5",
+              "_id": "6511a9ceba26bf4a3dfab26a"
+            }
+          ],
+          "owner": "650dc141ed9a4741301482ff",
+          "users": [],
+          "_id": "6511a9ceba26bf4a3dfab268",
+          "createdAt": "2023-09-25T15:39:58.426Z",
+          "updatedAt": "2023-09-25T15:39:58.426Z"
+        }
       },
       "securitySchemes": {
         "Bearer": {
