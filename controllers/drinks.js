@@ -181,7 +181,7 @@ const getOwnDrinks = async (req, res) => {
 
   const totalOwnDrinks = await Drink.countDocuments({ owner });
 
-  res.json({ total: totalOwnDrinks, result });
+  res.json({ total: totalOwnDrinks, drinks: result });
 };
 
 const addFavoriteDrink = async (req, res) => {
@@ -268,7 +268,7 @@ const getFavoriteDrinks = async (req, res) => {
     },
   });
 
-  res.json({ total: totalOwnDrinks, result });
+  res.json({ total: totalOwnDrinks, drinks: result });
 };
 
 module.exports = {
