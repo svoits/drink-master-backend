@@ -11,7 +11,7 @@ const getCategories = async (req, res) => {
   const parsedCategories = JSON.parse(categories);
   const sortedCategories = parsedCategories.sort((a, b) => a.localeCompare(b));
 
-  res.json({ categories: sortedCategories });
+  res.json(sortedCategories);
 };
 
 const getIngredients = async (req, res) => {
@@ -27,7 +27,7 @@ const getGlasses = async (req, res) => {
   const parsedGlasses = JSON.parse(glasses);
   const sortedGlasses = parsedGlasses.sort((a, b) => a.localeCompare(b));
 
-  res.json({ glasses: sortedGlasses });
+  res.json(sortedGlasses);
 };
 
 module.exports = {
