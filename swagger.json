@@ -471,7 +471,7 @@
         },
         "responses": {
           "200": {
-            "description": "Recipe is added",
+            "description": "Drink successfully added",
             "content": {
               "application/json": {
                 "schema": {
@@ -481,10 +481,58 @@
             }
           },
           "401": {
-            "description": "Missing header with authorization token"
+            "description": "Unauthorized"
           },
           "404": {
-            "description": "Wrong ingredient title"
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/api/drinks/own/remove/{id}": {
+      "delete": {
+        "tags": ["Drinks"],
+        "summary": "Delete user's drink",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "description": "Drink id"
+          }
+        ],
+        "security": [{ "Bearer": [] }],
+        "responses": {
+          "200": {
+            "description": "Drink successfully removed"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/api/drinks/own/all": {
+      "get": {
+        "tags": ["Drinks"],
+        "summary": "Get user's drinks",
+        "security": [{ "Bearer": [] }],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserRecipesResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing header with authorization token"
           }
         }
       }
@@ -1424,10 +1472,11 @@
         "required": [
           "drink",
           "category",
+          "description",
           "glass",
           "instructions",
           "ingredients",
-          "recipe"
+          "drinkThumb"
         ],
         "properties": {
           "drink": {
@@ -1513,36 +1562,15 @@
                   "type": "string",
                   "description": "Drink ingredient's measure"
                 }
-              },
-              "description": "Drink ingredients"
-            }
+              }
+            },
+            "description": "Drink ingredients"
           },
-          "recipe": {
+          "drinkThumb": {
             "type": "string",
             "description": "Drink's photo",
             "format": "binary"
           }
-        },
-        "example": {
-          "drink": "Quentin",
-          "description": "some description",
-          "category": "Ordinary Drink",
-          "glass": "Cocktail glass",
-          "instructions": [
-            "In a shaker half-filled with ice cubes, combine the rum, Kahlua, and cream. Shake well.",
-            "Strain into a cocktail glass and garnish with the nutmeg."
-          ],
-          "ingredients": [
-            {
-              "title": "Light rum",
-              "measure": "2 oz"
-            },
-            {
-              "title": "Applejack",
-              "measure": "2 oz"
-            }
-          ],
-          "recipe": "file"
         }
       },
       "AddOwnDrinkResponse": {
