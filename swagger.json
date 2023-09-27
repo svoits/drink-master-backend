@@ -794,14 +794,14 @@
       },
       "UserUpdateRequest": {
         "type": "object",
-        "required": ["name", "avatar"],
+        "required": ["name", "avatarURL"],
         "properties": {
           "name": {
             "type": "string",
             "description": "User's name",
             "example": "John"
           },
-          "avatar": {
+          "avatarURL": {
             "type": "string",
             "description": "User's avatar",
             "format": "binary"
