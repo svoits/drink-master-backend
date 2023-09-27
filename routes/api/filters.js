@@ -1,5 +1,5 @@
 const express = require("express");
-const { validateBody, authenticate, upload } = require("../../middlewares");
+const { authenticate } = require("../../middlewares");
 const {
   getCategories,
   getIngredients,
