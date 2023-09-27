@@ -70,9 +70,17 @@ const loginSchema = Joi.object({
   }),
 });
 
+const subscriptionSchema = Joi.object({
+  email: Joi.string().pattern(emailRegexp).required().messages({
+    "string.pattern.base": "Please enter a valid email! e.g. mail@mail.com",
+    "any.required": "missing required email field",
+  }),
+});
+
 const schemas = {
   registerSchema,
   loginSchema,
+  subscriptionSchema,
 };
 
 // exports
