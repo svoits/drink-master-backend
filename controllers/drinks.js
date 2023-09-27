@@ -60,7 +60,7 @@ const getPopularDrinks = async (req, res) => {
     .skip(skip)
     .limit(limit);
 
-  res.json({ result });
+  res.json(result);
 };
 
 const searchDrinks = async (req, res) => {
@@ -200,19 +200,19 @@ const addFavoriteDrink = async (req, res) => {
 
   const isFavorite = drink.users.includes(userId);
 
-  let result;
+  // let result;
 
   if (isFavorite) {
     throw HttpError(409, `${drink.drink} is already in your favorites.`);
   } else {
-    result = await Drink.findByIdAndUpdate(
+    await Drink.findByIdAndUpdate(
       drink._id,
       { $push: { users: userId } },
       { new: true }
     );
   }
 
-  res.json({ result });
+  res.json({ message: `${drink.drink} added to your favorites!` });
 };
 
 const removeFavoriteDrink = async (req, res) => {
@@ -227,10 +227,10 @@ const removeFavoriteDrink = async (req, res) => {
 
   const isFavorite = drink.users.includes(userId);
 
-  let result;
+  // let result;
 
   if (isFavorite) {
-    result = await Drink.findByIdAndUpdate(
+    await Drink.findByIdAndUpdate(
       drink._id,
       {
         $pull: { users: userId },
@@ -241,7 +241,7 @@ const removeFavoriteDrink = async (req, res) => {
     throw HttpError(403, `${drink.drink} is not in your favorites.`);
   }
 
-  res.json({ result });
+  res.json({ message: `${drink.drink} removed from your favorites!` });
 };
 
 const getFavoriteDrinks = async (req, res) => {

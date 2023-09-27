@@ -39,7 +39,6 @@
         "tags": ["Auth"],
         "summary": "User registration",
         "parameters": [],
-        "security": [{ "Bearer": [] }],
         "requestBody": {
           "description": "Registration's object",
           "required": true,
@@ -78,7 +77,6 @@
         "tags": ["Auth"],
         "summary": "User login",
         "parameters": [],
-        "security": [{ "Bearer": [] }],
         "requestBody": {
           "description": "Login's object",
           "required": true,
@@ -520,25 +518,157 @@
         "tags": ["Drinks"],
         "summary": "Get user's drinks",
         "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "description": "Number of page. Default page=1"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "description": "Number of cocktails on one page. Default limit=10"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful response",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/UserRecipesResponse"
+                  "$ref": "#/components/schemas/AllOwnDrinksResponse"
                 }
               }
             }
           },
           "401": {
-            "description": "Missing header with authorization token"
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/drinks/favorite/add/{id}": {
+      "patch": {
+        "tags": ["Drinks"],
+        "summary": "Add drink to user favorites",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "objectId",
+              "description": "Drink id"
+            },
+            "description": "Drink id"
+          }
+        ],
+        "security": [{ "Bearer": [] }],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddToFavoritesResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/api/drinks/favorite/remove/{id}": {
+      "delete": {
+        "tags": ["Drinks"],
+        "summary": "Remove drink from user favorites",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "objectId",
+              "description": "Drink id"
+            },
+            "description": "Drink id"
+          }
+        ],
+        "security": [{ "Bearer": [] }],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteFromFavoritesResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/api/drinks/favorite/all": {
+      "get": {
+        "tags": ["Drinks"],
+        "summary": "Get drinks from user favorites",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "description": "Number of page. Default page=1"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "description": "Number of cocktails on one page. Default limit=10"
+          }
+        ],
+        "security": [{ "Bearer": [] }],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AllFavoritesResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not found"
           }
         }
       }
     }
   },
   "components": {
+    "securitySchemes": {
+      "Bearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
     "schemas": {
       "RegistrationRequest": {
         "type": "object",
@@ -944,164 +1074,157 @@
         }
       },
       "PopularDrinksResponse": {
-        "type": "object",
-        "properties": {
-          "result": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "_id": {
-                  "type": "string"
-                },
-                "drink": {
-                  "type": "string"
-                },
-                "drinkAlternate": {
-                  "type": "string"
-                },
-                "tags": {
-                  "type": "string"
-                },
-                "video": {
-                  "type": "string"
-                },
-                "category": {
-                  "type": "string"
-                },
-                "IBA": {
-                  "type": "string"
-                },
-                "alcoholic": {
-                  "type": "string"
-                },
-                "glass": {
-                  "type": "string"
-                },
-                "description": {
-                  "type": "string"
-                },
-                "instructions": {
-                  "type": "string"
-                },
-                "instructionsES": {
-                  "type": "string"
-                },
-                "instructionsDE": {
-                  "type": "string"
-                },
-                "instructionsFR": {
-                  "type": "string"
-                },
-                "instructionsIT": {
-                  "type": "string"
-                },
-                "instructionsRU": {
-                  "type": "string"
-                },
-                "instructionsPL": {
-                  "type": "string"
-                },
-                "instructionsUK": {
-                  "type": "string"
-                },
-                "drinkThumb": {
-                  "type": "string"
-                },
-                "ingredients": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "title": {
-                        "type": "string"
-                      },
-                      "measure": {
-                        "type": "string"
-                      },
-                      "ingredientId": {
-                        "type": "string"
-                      }
-                    }
-                  }
-                },
-                "shortDescription": {
-                  "type": "string"
-                },
-                "updatedAt": {
-                  "type": "string"
-                },
-                "users": {
-                  "type": "array",
-                  "items": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "_id": {
+              "type": "string"
+            },
+            "drink": {
+              "type": "string"
+            },
+            "drinkAlternate": {
+              "type": "string"
+            },
+            "tags": {
+              "type": "string"
+            },
+            "video": {
+              "type": "string"
+            },
+            "category": {
+              "type": "string"
+            },
+            "IBA": {
+              "type": "string"
+            },
+            "alcoholic": {
+              "type": "string"
+            },
+            "glass": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "instructions": {
+              "type": "string"
+            },
+            "instructionsES": {
+              "type": "string"
+            },
+            "instructionsDE": {
+              "type": "string"
+            },
+            "instructionsFR": {
+              "type": "string"
+            },
+            "instructionsIT": {
+              "type": "string"
+            },
+            "instructionsRU": {
+              "type": "string"
+            },
+            "instructionsPL": {
+              "type": "string"
+            },
+            "instructionsUK": {
+              "type": "string"
+            },
+            "drinkThumb": {
+              "type": "string"
+            },
+            "ingredients": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "measure": {
+                    "type": "string"
+                  },
+                  "ingredientId": {
                     "type": "string"
                   }
                 }
               }
+            },
+            "shortDescription": {
+              "type": "string"
+            },
+            "updatedAt": {
+              "type": "string"
+            },
+            "users": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
             }
           }
         },
-        "example": {
-          "result": [
-            {
-              "_id": "639b6de9ff77d221f190c54c",
-              "drink": "Pure Passion",
-              "drinkAlternate": "Sorry, not specified",
-              "tags": "Passion",
-              "video": "Sorry, not specified",
-              "category": "Cocktail",
-              "IBA": "Sorry, not specified",
-              "alcoholic": "Alcoholic",
-              "glass": "Whiskey sour glass",
-              "description": "Pure Passion is a passionate and tropical cocktail that captures the essence of exotic fruits. It is made with passion fruit juice, rum, lime juice, and a touch of sugar. The combination of flavors creates a refreshing and vibrant drink that is perfect for lounging by the pool or enjoying a summer evening with friends. Indulge in the pure passion of this delightful cocktail.",
-              "instructions": "Mix up all ingredients with a cocktail stirrer and serve with crushed ice with mint and edible flour if available.",
-              "instructionsES": "Mezcle todos los ingredientes con un agitador de cóctel y sirva con hielo picado con menta y harina comestible si está disponible.",
-              "instructionsDE": "Alle Zutaten mit einem Cocktailrührer mixen und mit Crushed Ice mit Minze und Speisemehl, falls vorhanden, servieren.",
-              "instructionsFR": "Mélangez tous les ingrédients avec un agitateur à cocktail et servez avec de la glace pilée à la menthe et de la farine alimentaire si disponible.",
-              "instructionsIT": "Mescolare tutti gli ingredienti con un agitatore per cocktail e servire con ghiaccio tritato con menta e farina commestibile se disponibile.",
-              "instructionsRU": "Смешайте все ингредиенты миксером для коктейлей и подавайте с колотым льдом с мятой и пищевой мукой, если таковая имеется.",
-              "instructionsPL": "Wymieszaj wszystkie składniki za pomocą mieszadła do koktajli i podawaj z kruszonym lodem z miętą i mąką jadalną, jeśli jest dostępna.",
-              "instructionsUK": "Змішайте всі інгредієнти мішалкою для коктейлів і подавайте з колотим льодом з м'ятою і харчовим борошном, якщо є.",
-              "drinkThumb": "https://res.cloudinary.com/dhgao4rhl/image/upload/v1695485912/drinks/Pure_Passion.jpg",
-              "ingredients": [
-                {
-                  "title": "Rum",
-                  "measure": "40 ml",
-                  "ingredientId": "64aebb7f82d96cc69e0eb4cb"
-                },
-                {
-                  "title": "Passoa",
-                  "measure": "20 ml",
-                  "ingredientId": "64f1d5c169d8333cf130fb52"
-                },
-                {
-                  "title": "Lime Juice",
-                  "measure": "30 ml",
-                  "ingredientId": "64aebb7f82d96cc69e0eb4c1"
-                },
-                {
-                  "title": "Passion fruit syrup",
-                  "measure": "15 ml",
-                  "ingredientId": "64f1d5c169d8333cf130fb55"
-                },
-                {
-                  "title": "Peach Bitters",
-                  "measure": "Dash",
-                  "ingredientId": "64f1d5c269d8333cf130fb58"
-                },
-                {
-                  "title": "Mint",
-                  "measure": "Garnish with",
-                  "ingredientId": "64f1d5c269d8333cf130fb5b"
-                }
-              ],
-              "shortDescription": "A passionate and tropical cocktail with passion fruit, rum, and citrus juices.",
-              "updatedAt": "2023-09-25T10:00:51.360Z",
-              "users": ["65101016b13a820a64d3f012", "6511587d2be01e5a1d7d101c"],
-              "popularity": 2
-            }
-          ]
-        }
+        "example": [
+          {
+            "_id": "639b6de9ff77d221f190c54c",
+            "drink": "Pure Passion",
+            "drinkAlternate": "Sorry, not specified",
+            "tags": "Passion",
+            "video": "Sorry, not specified",
+            "category": "Cocktail",
+            "IBA": "Sorry, not specified",
+            "alcoholic": "Alcoholic",
+            "glass": "Whiskey sour glass",
+            "description": "Pure Passion is a passionate and tropical cocktail that captures the essence of exotic fruits. It is made with passion fruit juice, rum, lime juice, and a touch of sugar. The combination of flavors creates a refreshing and vibrant drink that is perfect for lounging by the pool or enjoying a summer evening with friends. Indulge in the pure passion of this delightful cocktail.",
+            "instructions": "Mix up all ingredients with a cocktail stirrer and serve with crushed ice with mint and edible flour if available.",
+            "instructionsES": "Mezcle todos los ingredientes con un agitador de cóctel y sirva con hielo picado con menta y harina comestible si está disponible.",
+            "instructionsDE": "Alle Zutaten mit einem Cocktailrührer mixen und mit Crushed Ice mit Minze und Speisemehl, falls vorhanden, servieren.",
+            "instructionsFR": "Mélangez tous les ingrédients avec un agitateur à cocktail et servez avec de la glace pilée à la menthe et de la farine alimentaire si disponible.",
+            "instructionsIT": "Mescolare tutti gli ingredienti con un agitatore per cocktail e servire con ghiaccio tritato con menta e farina commestibile se disponibile.",
+            "instructionsRU": "Смешайте все ингредиенты миксером для коктейлей и подавайте с колотым льдом с мятой и пищевой мукой, если таковая имеется.",
+            "instructionsPL": "Wymieszaj wszystkie składniki za pomocą mieszadła do koktajli i podawaj z kruszonym lodem z miętą i mąką jadalną, jeśli jest dostępna.",
+            "instructionsUK": "Змішайте всі інгредієнти мішалкою для коктейлів і подавайте з колотим льодом з м'ятою і харчовим борошном, якщо є.",
+            "drinkThumb": "https://res.cloudinary.com/dhgao4rhl/image/upload/v1695485912/drinks/Pure_Passion.jpg",
+            "ingredients": [
+              {
+                "title": "Rum",
+                "measure": "40 ml",
+                "ingredientId": "64aebb7f82d96cc69e0eb4cb"
+              },
+              {
+                "title": "Passoa",
+                "measure": "20 ml",
+                "ingredientId": "64f1d5c169d8333cf130fb52"
+              },
+              {
+                "title": "Lime Juice",
+                "measure": "30 ml",
+                "ingredientId": "64aebb7f82d96cc69e0eb4c1"
+              },
+              {
+                "title": "Passion fruit syrup",
+                "measure": "15 ml",
+                "ingredientId": "64f1d5c169d8333cf130fb55"
+              },
+              {
+                "title": "Peach Bitters",
+                "measure": "Dash",
+                "ingredientId": "64f1d5c269d8333cf130fb58"
+              },
+              {
+                "title": "Mint",
+                "measure": "Garnish with",
+                "ingredientId": "64f1d5c269d8333cf130fb5b"
+              }
+            ],
+            "shortDescription": "A passionate and tropical cocktail with passion fruit, rum, and citrus juices.",
+            "updatedAt": "2023-09-25T10:00:51.360Z",
+            "users": ["65101016b13a820a64d3f012", "6511587d2be01e5a1d7d101c"],
+            "popularity": 2
+          }
+        ]
       },
       "SearchDrinksResponse": {
         "type": "object",
@@ -1679,11 +1802,270 @@
           "updatedAt": "2023-09-25T15:39:58.426Z"
         }
       },
-      "securitySchemes": {
-        "Bearer": {
-          "type": "http",
-          "scheme": "bearer",
-          "bearerFormat": "JWT"
+      "AllOwnDrinksResponse": {
+        "type": "object",
+        "properties": {
+          "total": {
+            "type": "integer",
+            "description": "Total number of results"
+          },
+          "drinks": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "_id": {
+                  "type": "string",
+                  "description": "Unique identifier for the drink"
+                },
+                "drink": {
+                  "type": "string",
+                  "description": "Name of the drink"
+                },
+                "drinkAlternate": {
+                  "type": "string",
+                  "description": "Alternate name for the drink"
+                },
+                "category": {
+                  "type": "string",
+                  "description": "Category of the drink"
+                },
+                "alcoholic": {
+                  "type": "string",
+                  "description": "Alcoholic content of the drink"
+                },
+                "glass": {
+                  "type": "string",
+                  "description": "Type of glass used for the drink"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "Description of the drink"
+                },
+                "drinkThumb": {
+                  "type": "string",
+                  "description": "URL of the drink's image"
+                },
+                "ingredients": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "title": {
+                        "type": "string",
+                        "description": "Name of the ingredient"
+                      },
+                      "ingredientId": {
+                        "type": "string",
+                        "description": "Unique identifier for the ingredient"
+                      },
+                      "_id": {
+                        "type": "string",
+                        "description": "Unique identifier for the ingredient in this drink"
+                      }
+                    }
+                  },
+                  "description": "List of ingredients used in the drink"
+                },
+                "owner": {
+                  "type": "string",
+                  "description": "Owner of the drink"
+                },
+                "users": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "User IDs associated with the drink"
+                  },
+                  "description": "List of user IDs related to the drink"
+                },
+                "createdAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "Date and time when the drink was created"
+                },
+                "updatedAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "Date and time when the drink information was last updated"
+                }
+              }
+            },
+            "description": "List of drinks matching the search criteria"
+          }
+        },
+        "example": {
+          "total": 1,
+          "drinks": [
+            {
+              "_id": "6511c958ddc77d8ad989e359",
+              "drink": "2222DRINK12321312312223",
+              "drinkAlternate": "Sorry, not specified",
+              "category": "Ordinary Drink",
+              "alcoholic": "Non alcoholic",
+              "glass": "Cocktail glass",
+              "description": "Quentin is a refreshing cocktail that combines the flavors of citrus and mint. It is made with fresh lime juice, orange liqueur, and a touch of mint syrup. The drink is served over ice and garnished with a sprig of mint. It is the perfect beverage for a hot summer day.",
+              "drinkThumb": "https://res.cloudinary.com/dhgao4rhl/image/upload/v1695664472/drinks/hpujmxgvmugh0ddtpqjc.jpg",
+              "ingredients": [
+                {
+                  "title": "Light rum",
+                  "ingredientId": "64aebb7f82d96cc69e0eb4a4",
+                  "_id": "6511c958ddc77d8ad989e35a"
+                },
+                {
+                  "title": "Applejack",
+                  "ingredientId": "64aebb7f82d96cc69e0eb4a5",
+                  "_id": "6511c958ddc77d8ad989e35b"
+                }
+              ],
+              "owner": "650dc141ed9a4741301482ff",
+              "users": [],
+              "createdAt": "2023-09-25T17:54:32.468Z",
+              "updatedAt": "2023-09-25T17:54:32.468Z"
+            }
+          ]
+        }
+      },
+      "AddToFavoritesResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Negroni added to your favorites!"
+          }
+        }
+      },
+      "DeleteFromFavoritesResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Negroni removed from your favorites!"
+          }
+        }
+      },
+      "AllFavoritesResponse": {
+        "type": "object",
+        "properties": {
+          "total": {
+            "type": "integer",
+            "description": "Total number of results"
+          },
+          "drinks": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "_id": {
+                  "type": "string",
+                  "description": "Unique identifier for the drink"
+                },
+                "drink": {
+                  "type": "string",
+                  "description": "Name of the drink"
+                },
+                "drinkAlternate": {
+                  "type": "string",
+                  "description": "Alternate name for the drink"
+                },
+                "category": {
+                  "type": "string",
+                  "description": "Category of the drink"
+                },
+                "alcoholic": {
+                  "type": "string",
+                  "description": "Alcoholic content of the drink"
+                },
+                "glass": {
+                  "type": "string",
+                  "description": "Type of glass used for the drink"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "Description of the drink"
+                },
+                "drinkThumb": {
+                  "type": "string",
+                  "description": "URL of the drink's image"
+                },
+                "ingredients": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "title": {
+                        "type": "string",
+                        "description": "Name of the ingredient"
+                      },
+                      "ingredientId": {
+                        "type": "string",
+                        "description": "Unique identifier for the ingredient"
+                      },
+                      "_id": {
+                        "type": "string",
+                        "description": "Unique identifier for the ingredient in this drink"
+                      }
+                    }
+                  },
+                  "description": "List of ingredients used in the drink"
+                },
+                "owner": {
+                  "type": "string",
+                  "description": "Owner of the drink"
+                },
+                "users": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "User IDs associated with the drink"
+                  },
+                  "description": "List of user IDs related to the drink"
+                },
+                "createdAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "Date and time when the drink was created"
+                },
+                "updatedAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "Date and time when the drink information was last updated"
+                }
+              }
+            },
+            "description": "List of drinks matching the search criteria"
+          }
+        },
+        "example": {
+          "total": 1,
+          "drinks": [
+            {
+              "_id": "6511c958ddc77d8ad989e359",
+              "drink": "2222DRINK12321312312223",
+              "drinkAlternate": "Sorry, not specified",
+              "category": "Ordinary Drink",
+              "alcoholic": "Non alcoholic",
+              "glass": "Cocktail glass",
+              "description": "Quentin is a refreshing cocktail that combines the flavors of citrus and mint. It is made with fresh lime juice, orange liqueur, and a touch of mint syrup. The drink is served over ice and garnished with a sprig of mint. It is the perfect beverage for a hot summer day.",
+              "drinkThumb": "https://res.cloudinary.com/dhgao4rhl/image/upload/v1695664472/drinks/hpujmxgvmugh0ddtpqjc.jpg",
+              "ingredients": [
+                {
+                  "title": "Light rum",
+                  "ingredientId": "64aebb7f82d96cc69e0eb4a4",
+                  "_id": "6511c958ddc77d8ad989e35a"
+                },
+                {
+                  "title": "Applejack",
+                  "ingredientId": "64aebb7f82d96cc69e0eb4a5",
+                  "_id": "6511c958ddc77d8ad989e35b"
+                }
+              ],
+              "owner": "650dc141ed9a4741301482ff",
+              "users": [],
+              "createdAt": "2023-09-25T17:54:32.468Z",
+              "updatedAt": "2023-09-25T17:54:32.468Z"
+            }
+          ]
         }
       }
     }
