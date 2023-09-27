@@ -21,13 +21,14 @@ const signup = async (req, res) => {
   const newUser = await User.create({
     ...req.body,
     password: hashPassword,
-    avatarURL,
+    avatarURL: avatarURL.slice(2),
   });
 
   res.status(201).json({
     user: {
       name: newUser.name,
       email: newUser.email,
+      avatarURL: newUser.avatarURL,
     },
   });
 };
@@ -56,6 +57,7 @@ const signin = async (req, res) => {
     user: {
       email: user.email,
       name: user.name,
+      avatarURL: user.avatarURL,
     },
     token,
   });
