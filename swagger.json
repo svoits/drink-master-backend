@@ -548,7 +548,7 @@
       }
     },
     "/api/drinks/favorite/add/{id}": {
-      "patch": {
+      "post": {
         "tags": ["Drinks"],
         "summary": "Add drink to user favorites",
         "parameters": [
