@@ -21,7 +21,7 @@ const signup = async (req, res) => {
   const newUser = await User.create({
     ...req.body,
     password: hashPassword,
-    avatarURL: avatarURL.slice(2),
+    avatarURL,
   });
 
   res.status(201).json({
