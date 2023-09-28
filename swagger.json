@@ -376,7 +376,22 @@
             "in": "query",
             "description": "Drink category",
             "required": false,
-            "type": "string"
+            "schema": {
+              "type": "string",
+              "enum": [
+                "Ordinary Drink",
+                "Cocktail",
+                "Shake",
+                "Other/Unknown",
+                "Cocoa",
+                "Shot",
+                "Coffee/Tea",
+                "Homemade Liqueur",
+                "Punch/Party Drink",
+                "Beer",
+                "Soft Drink"
+              ]
+            }
           },
           {
             "name": "page",
@@ -766,6 +781,16 @@
                 "description": "User's email",
                 "format": "email",
                 "example": "john@mail.com"
+              },
+              "avatarURL": {
+                "type": "string",
+                "description": "User's avatar",
+                "example": "//www.gravatar.com/avatar/265e97cb1b328b88c485ea82e9dee465"
+              },
+              "birthDate": {
+                "type": "string",
+                "description": "User's name",
+                "example": "2002-02-03T00:00:00+00:00"
               }
             }
           },
@@ -797,6 +822,11 @@
                 "type": "string",
                 "description": "User's avatar",
                 "example": "//www.gravatar.com/avatar/265e97cb1b328b88c485ea82e9dee465"
+              },
+              "birthDate": {
+                "type": "string",
+                "description": "User's name",
+                "example": "2002-02-03T00:00:00+00:00"
               }
             }
           },
@@ -1611,6 +1641,7 @@
           "drink",
           "category",
           "description",
+          "alcoholic",
           "glass",
           "instructions",
           "ingredients",
@@ -1624,6 +1655,11 @@
           "description": {
             "type": "string",
             "description": "Drink description"
+          },
+          "alcoholic": {
+            "type": "string",
+            "description": "Alcoholic / Non alcoholic",
+            "enum": ["Alcoholic", "Non alcoholic"]
           },
           "category": {
             "type": "string",
@@ -1681,11 +1717,9 @@
             "description": "Select type of glass for drink"
           },
           "instructions": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "Instructions for drink preparation"
+            "type": "string",
+            "description": "Instructions for drink preparation",
+            "example": "Instructions for drink preparation"
           },
           "ingredients": {
             "type": "array",
@@ -1953,9 +1987,149 @@
       "DeleteFromFavoritesResponse": {
         "type": "object",
         "properties": {
-          "message": {
-            "type": "string",
-            "example": "Negroni removed from your favorites!"
+          "result": {
+            "type": "object",
+            "properties": {
+              "_id": {
+                "type": "string"
+              },
+              "drink": {
+                "type": "string"
+              },
+              "drinkAlternate": {
+                "type": "string"
+              },
+              "tags": {
+                "type": "string"
+              },
+              "video": {
+                "type": "string"
+              },
+              "category": {
+                "type": "string"
+              },
+              "IBA": {
+                "type": "string"
+              },
+              "alcoholic": {
+                "type": "string"
+              },
+              "glass": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "instructions": {
+                "type": "string"
+              },
+              "instructionsES": {
+                "type": "string"
+              },
+              "instructionsDE": {
+                "type": "string"
+              },
+              "instructionsFR": {
+                "type": "string"
+              },
+              "instructionsIT": {
+                "type": "string"
+              },
+              "instructionsRU": {
+                "type": "string"
+              },
+              "instructionsPL": {
+                "type": "string"
+              },
+              "instructionsUK": {
+                "type": "string"
+              },
+              "drinkThumb": {
+                "type": "string"
+              },
+              "ingredients": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "measure": {
+                      "type": "string"
+                    },
+                    "ingredientId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "shortDescription": {
+                "type": "string"
+              },
+              "updatedAt": {
+                "type": "string"
+              },
+              "users": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "example": {
+          "result": {
+            "_id": "639b6de9ff77d221f190c563",
+            "drink": "Just a Moonmint",
+            "drinkAlternate": "Sorry, not specified",
+            "tags": "Sorry, not specified",
+            "video": "Sorry, not specified",
+            "category": "Shake",
+            "IBA": "Sorry, not specified",
+            "alcoholic": "Non alcoholic",
+            "glass": "Highball Glass",
+            "description": "Just a Moonmint is a refreshing and minty cocktail that combines the flavors of vodka, lime juice, and mint syrup. It is made by shaking vodka, lime juice, mint syrup, and ice together and straining it into a glass. The result is a crisp and invigorating drink with a hint of sweetness from the mint syrup. Sip on this cocktail and let the coolness of the mint refresh your palate.",
+            "instructions": "Place all ingredients in the blender jar - cover and whiz on medium speed until well blended. Pour in one tall, 2 medium or 3 small glasses and drink up.",
+            "instructionsES": "Coloque todos los ingredientes en el vaso de la licuadora, tape y mezcle a velocidad media hasta que estén bien mezclados. Vierta en un vaso alto, 2 medianos o 3 pequeños y beba.",
+            "instructionsDE": "Alle Zutaten in den Mixer geben - abdecken und bei mittlerer Geschwindigkeit schaumig schlagen, bis sie gut vermischt sind. In ein großes, 2 mittlere oder 3 kleine Gläser füllen und genießen.",
+            "instructionsFR": "Placer tous les ingrédients dans le bol du mélangeur - couvrir et fouetter à vitesse moyenne jusqu'à ce que le tout soit bien mélangé. Verser dans un grand, 2 moyens ou 3 petits verres et boire.",
+            "instructionsIT": "Mettere tutti gli ingredienti nella caraffa del frullatore - coprire e montare a velocità media fino a quando non sono ben amalgamati.Versare in un bicchiere alto, 2 medi o 3 piccoli e bere.",
+            "instructionsRU": "Поместите все ингредиенты в чашу блендера, накройте крышкой и взбивайте на средней скорости, пока они хорошо не перемешаются. Налейте в один высокий, 2 средних или 3 маленьких стакана и выпейте.",
+            "instructionsPL": "Umieść wszystkie składniki w dzbanku blendera - przykryj i ubijaj na średnich obrotach, aż dobrze się połączą. Wlej jedną dużą, 2 średnie lub 3 małe szklanki i wypij.",
+            "instructionsUK": "Помістіть усі інгредієнти в ємність блендера, накрийте кришкою та збийте на середній швидкості, поки добре не змішаються. Налийте в одну високу, 2 середні або 3 маленькі склянки і випийте.",
+            "drinkThumb": "https://res.cloudinary.com/dhgao4rhl/image/upload/v1695485912/drinks/Just_a_Moonmint.jpg",
+            "ingredients": [
+              {
+                "_id": "6515f3d1cd6fc26dee6bddf0",
+                "title": "Milk",
+                "measure": "2 cups",
+                "ingredientId": "64aebb7f82d96cc69e0eb4d5"
+              },
+              {
+                "_id": "6515f3d1cd6fc26dee6bddf1",
+                "title": "Chocolate syrup",
+                "ingredientId": "64aebb7f82d96cc69e0eb4d7"
+              },
+              {
+                "_id": "6515f3d1cd6fc26dee6bddf2",
+                "title": "Mint syrup",
+                "ingredientId": "64f1d5c269d8333cf130fb61"
+              }
+            ],
+            "shortDescription": "A refreshing and minty cocktail with vodka, lime juice, and mint syrup.",
+            "updatedAt": "2023-09-28T21:44:49.976Z",
+            "users": [
+              "65101016b13a820a64d3f012",
+              "6511587d2be01e5a1d7d101c",
+              "6513dbb6b37026dc801ecff2",
+              "650f031a9b843ebebe0ae011",
+              "651447941f94bc57e3806284"
+            ]
           }
         }
       },
