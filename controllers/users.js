@@ -16,7 +16,7 @@ const getCurrent = async (req, res) => {
 };
 
 const updateUser = async (req, res) => {
-  const { _id } = req.user;
+  const { _id, avatarURL } = req.user;
   const { name } = req.body;
 
   const updatedData = {
@@ -25,6 +25,8 @@ const updateUser = async (req, res) => {
 
   if (req.file) {
     updatedData.avatarURL = req.file.path;
+  } else {
+    updatedData.avatarURL = avatarURL;
   }
 
   await User.findByIdAndUpdate(_id, updatedData);
