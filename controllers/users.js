@@ -3,15 +3,16 @@ const { User } = require("../models/user");
 const { controllerWrapper, HttpError, sendEmail } = require("../helpers");
 
 const getCurrent = async (req, res) => {
-  const { email, name, avatarURL, token } = req.user;
+  const { email, name, avatarURL, birthDate, token } = req.user;
 
   res.json({
-    token,
     user: {
       email,
       name,
       avatarURL,
+      birthDate,
     },
+    token,
   });
 };
 

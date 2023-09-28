@@ -37,6 +37,7 @@ const signup = async (req, res) => {
       name: newUser.name,
       email: newUser.email,
       avatarURL: newUser.avatarURL,
+      birthDate: newUser.birthDate,
     },
     token,
   });
@@ -67,6 +68,7 @@ const signin = async (req, res) => {
       email: user.email,
       name: user.name,
       avatarURL: user.avatarURL,
+      birthDate: user.birthDate,
     },
     token,
   });
