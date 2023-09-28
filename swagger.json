@@ -713,8 +713,23 @@
                 "description": "User's email",
                 "format": "email",
                 "example": "john@mail.com"
+              },
+              "avatarURL": {
+                "type": "string",
+                "description": "User's avatar",
+                "example": "https://res.cloudinary.com/dhgao4rhl/image/upload/v1695901428/avatars/w7mstq9lir3ycxsvz3r3.jpg"
+              },
+              "birthDate": {
+                "type": "string",
+                "description": "User's birth date",
+                "example": "2004-02-03T00:00:00.000Z"
               }
             }
+          },
+          "token": {
+            "type": "string",
+            "description": "User's token (needed for all requests)",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1MTQ0Nzk0MWY5NGJjNTdlMzgwNjI4NCIsImlhdCI6MTY5NTkzMTM2NiwiZXhwIjoxNjk2MDE0MTY2fQ.LhLpPkZxgGyE5xcaPnY2GlyQja1a295L4lW7wbu7T0Y"
           }
         }
       },
@@ -794,14 +809,14 @@
       },
       "UserUpdateRequest": {
         "type": "object",
-        "required": ["name", "avatarURL"],
+        "required": ["name", "avatar"],
         "properties": {
           "name": {
             "type": "string",
             "description": "User's name",
             "example": "John"
           },
-          "avatarURL": {
+          "avatar": {
             "type": "string",
             "description": "User's avatar",
             "format": "binary"
