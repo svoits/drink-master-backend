@@ -51,11 +51,6 @@ const getPopularDrinks = async (req, res) => {
     {
       $sort: { popularity: -1 }, // Sort by array length in descending order
     },
-    // {
-    //   $project: {
-    //     popularity: 0, // Exclude the temporary field from the final result if desired
-    //   },
-    // },
   ])
     .skip(skip)
     .limit(limit);
@@ -111,9 +106,10 @@ const getDrinkById = async (req, res) => {
 
 const addOwnDrink = async (req, res) => {
   const { _id: owner } = req.user;
+  console.log(req.body);
   const { ingredients } = req.body;
-
-  // const ingredients = [{ title: "Light rum" }, { title: "Applejack" }]; // FOR TEST
+  console.log(ingredients);
+  const parsedIngredients = JSON.parse(ingredients);
 
   let drinkThumb = "";
   if (req.file) {
@@ -122,8 +118,9 @@ const addOwnDrink = async (req, res) => {
 
   const ingredientsArr = [];
 
-  for (const ingredient of ingredients) {
+  for (const ingredient of parsedIngredients) {
     console.log(ingredient);
+
     const ingredientInfo = await Ingredient.findOne({
       title: ingredient.title,
     });
@@ -161,12 +158,12 @@ const removeOwnDrink = async (req, res) => {
   }
 
   if (result.owner.toString() !== currentUser.toString()) {
-    throw HttpError(403, "Not authorized");
+    throw HttpError(403, "User is not authorized to delete this cocktail");
   }
 
   const removedDrink = await Drink.findByIdAndRemove(id);
 
-  res.json({ message: `${removedDrink.drink} drink succesfully removed.` });
+  res.json({ message: `${removedDrink.drink} drink successfully removed.` });
 };
 
 const getOwnDrinks = async (req, res) => {
