@@ -39,7 +39,10 @@ const updateSubscription = async (req, res) => {
   const user = await User.findOne({ email });
 
   if (!user) {
-    throw HttpError(404, "Not found");
+    throw HttpError(
+      404,
+      "User with this email has not been registered yet in Drink Master App. Please register first."
+    );
   }
 
   if (user.subscription) {
