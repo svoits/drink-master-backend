@@ -25,9 +25,9 @@ const drinkSchema = new Schema(
         "Other/Unknown",
         "Cocoa",
         "Shot",
-        "Coffee/Tea",
+        "Coffee / Tea",
         "Homemade Liqueur",
-        "Punch/Party Drink",
+        "Punch / Party Drink",
         "Beer",
         "Soft Drink",
       ],
@@ -125,9 +125,9 @@ const drinkValidationSchema = Joi.object({
       "Other/Unknown",
       "Cocoa",
       "Shot",
-      "Coffee/Tea",
+      "Coffee / Tea",
       "Homemade Liqueur",
-      "Punch/Party Drink",
+      "Punch / Party Drink",
       "Beer",
       "Soft Drink"
     )
