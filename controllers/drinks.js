@@ -106,9 +106,7 @@ const getDrinkById = async (req, res) => {
 
 const addOwnDrink = async (req, res) => {
   const { _id: owner } = req.user;
-  console.log(req.body);
   const { ingredients } = req.body;
-  console.log(ingredients);
   const parsedIngredients = JSON.parse(ingredients);
 
   let drinkThumb = "";
@@ -119,8 +117,6 @@ const addOwnDrink = async (req, res) => {
   const ingredientsArr = [];
 
   for (const ingredient of parsedIngredients) {
-    console.log(ingredient);
-
     const ingredientInfo = await Ingredient.findOne({
       title: ingredient.title,
     });
