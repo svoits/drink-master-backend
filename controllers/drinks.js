@@ -117,9 +117,7 @@ const addOwnDrink = async (req, res) => {
   const ingredientsArr = [];
 
   for (const ingredient of parsedIngredients) {
-    const ingredientInfo = await Ingredient.findOne({
-      title: ingredient.title,
-    });
+    const ingredientInfo = await Ingredient.findById(ingredient.ingredientId);
 
     if (!ingredientInfo) {
       throw HttpError(404, "Not Found");
