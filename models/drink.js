@@ -88,6 +88,7 @@ const drinkSchema = new Schema(
     drinkThumb: String,
     ingredients: [
       {
+        title: String,
         measure: String,
         quantity: String,
         ingredientId: {
@@ -175,7 +176,11 @@ const drinkValidationSchema = Joi.object({
       "any.required": "The glass field is required",
     }),
   ingredients: Joi.array().items(
-    Joi.object({ quantity: Joi.string(), measure: Joi.string() })
+    Joi.object({
+      quantity: Joi.string(),
+      measure: Joi.string(),
+      title: Joi.string(),
+    })
       .required()
       .messages({ "any.required": "The ingredients field is required" })
   ),
