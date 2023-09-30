@@ -123,9 +123,10 @@ const addOwnDrink = async (req, res) => {
       throw HttpError(404, "Not Found");
     }
 
-    const { _id: ingredientId } = ingredientInfo;
+    const { _id: ingredientId, title } = ingredientInfo;
 
     ingredientsArr.push({
+      title,
       ...ingredient,
       ingredientId,
     });
