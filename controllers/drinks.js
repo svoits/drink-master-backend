@@ -107,6 +107,7 @@ const getDrinkById = async (req, res) => {
 const addOwnDrink = async (req, res) => {
   const { _id: owner } = req.user;
   const { ingredients } = req.body;
+  console.log(req.body);
   const parsedIngredients = JSON.parse(ingredients);
 
   let drinkThumb = "";
@@ -158,7 +159,7 @@ const removeOwnDrink = async (req, res) => {
 
   const removedDrink = await Drink.findByIdAndRemove(id);
 
-  res.json({ message: `${removedDrink.drink} drink successfully removed.` });
+  res.json({ result: removedDrink });
 };
 
 const getOwnDrinks = async (req, res) => {
