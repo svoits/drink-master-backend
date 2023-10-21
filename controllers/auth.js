@@ -9,17 +9,19 @@ const { SECRET_KEY } = process.env;
 
 const signup = async (req, res) => {
   const { email, password } = req.body;
-  const user = await User.findOne({ email });
+  const normalizedEmail = email.toLowerCase();
+  const user = await User.findOne({ email: normalizedEmail });
 
   if (user) {
     throw HttpError(409, "Email in use");
   }
 
   const hashPassword = await bcrypt.hash(password, 10);
-  const avatarURL = gravatar.url(email);
+  const avatarURL = gravatar.url(normalizedEmail);
 
   const newUser = await User.create({
     ...req.body,
+    email: normalizedEmail,
     password: hashPassword,
     avatarURL,
   });
