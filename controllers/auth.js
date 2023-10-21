@@ -47,7 +47,8 @@ const signup = async (req, res) => {
 
 const signin = async (req, res) => {
   const { email, password } = req.body;
-  const user = await User.findOne({ email });
+  const normalizedEmail = email.toLowerCase();
+  const user = await User.findOne({ email: normalizedEmail });
 
   if (!user) {
     throw HttpError(401, "Email or password is wrong");
