@@ -45,9 +45,13 @@ Before you can run the Drink Master backend, you'll need to have the following s
 ### <a id="installation">Installation</a>
 
 1. Clone the repository to your local machine:
-   `git clone https://github.com/svoits/drink-master-backend.git`
+   ```
+   git clone https://github.com/svoits/drink-master-backend.git
+   ```
 2. Change your current directory to the project folder:
-   `cd drink-master-backend`
+   ```
+   cd drink-master-backend
+   ```
 3. Install the project dependencies:
    ```
    npm install
